@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 public class ScreenDrag : MonoBehaviour
 {
@@ -13,21 +12,23 @@ public class ScreenDrag : MonoBehaviour
 
     public GameManager gameManager;
 
+
     private void Update()
     {
-        // 드래그 시작 시 선택된 객체 리스트 초기화
+        // 드래그 시작 - 이전에 선택된 사과 정보들 초기화
         if (Input.GetMouseButtonDown(0))
         {
+            gameManager.ClearSelectedApples();
+            isDrag = true;
             dragStartPos = Input.mousePosition;
             dragStartPos.y = Screen.height - dragStartPos.y;
-            isDrag = true;
-            gameManager.ClearSelectedApples();  
         }
-        // 드래그 종료 시 범위 내 사과 객체들 선택
-        else if (Input.GetMouseButtonUp(0))
+
+        // 드래그 종료 - 선택된 사과 정보들 계산
+        if (Input.GetMouseButtonUp(0))
         {
             isDrag = false;
-            gameManager.SelectApplesInDrag(rectMinPos, rectMaxPos); 
+            gameManager.CalculateApples();
         }
 
         // 드래그 중일때 좌표 업데이트
@@ -38,6 +39,9 @@ public class ScreenDrag : MonoBehaviour
 
             rectMinPos = Vector2.Min(currentMousePos, dragStartPos);
             rectMaxPos = Vector2.Max(currentMousePos, dragStartPos);
+
+            gameManager.SelectApplesInDrag(rectMinPos, rectMaxPos);
+            gameManager.ChangeSelectedApplesNumberColor(Color.blue);    // 파란색으로 숫자 색상 변경
         }
     }
 

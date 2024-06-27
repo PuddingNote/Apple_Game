@@ -1,45 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     [Header("--------------[ Game Control ]")]
+    private int score = 0;                      // 점수
+    private int appleScore = 10;                // 사과 하나의 점수
+    private bool isGameOver;                    // GameOver 판단
 
-
-    [Header("--------------[ Main ]")]
-    public int score;               // 점수
-    public bool isGameOver;         // GameOver 판단
-
-    [Header("--------------[ Object Pooling ]")]
-    public GameObject applePrefab;
-    public Transform appleGroup;
-    public List<Apple> applePool;
-
+    [Header("--------------[ Game Setting ]")]
+    public GameObject applePrefab;              // 
+    public Transform appleGroup;                // 
+    public List<Apple> applePool;               // 
     [Range(0, 120)]
-    public int poolSize;            // 오브젝트 풀링 Size
+    public int poolSize;                        // 오브젝트 풀링 Size
 
-    [Header("--------------[ Game Settings ]")]
-    //public int horizontalLength;
-    //public int verticalLength;
-
-    [Header("--------------[ UI ]")]
-    public TextMeshProUGUI scoreText;
-
-
-    [Header("--------------[ TEST ]")]
     public GameObject[] appleObjects;           // 씬에 있는 모든 사과 객체 배열
     public List<GameObject> selectedApples;     // 선택된 사과 객체 리스트
+    public List<GameObject> lastSelectedApples; // 이전에 선택된 사과들을 저장할 리스트
+
+
+    [Header("--------------[ UI ]")]
+    public TextMeshProUGUI scoreText;           // 
+
+    [Header("--------------[ Gaugebar ]")]
+    private float timeLimit = 60f;              // 기본 시간 제한(초)
+    private float currentTime;                  // 현재 시간
+    public Slider timeSlider;                   // UI에 표시할 게이지 바
 
 
     private void Awake()
     {
-        Application.targetFrameRate = 60;   // 프레임 설정
+        Application.targetFrameRate = 60;       // 프레임 설정
+
         applePool = new List<Apple>();
         selectedApples = new List<GameObject>();
+        lastSelectedApples = new List<GameObject>();
 
+        // 
         for (int i = 0; i < poolSize; i++)
         {
             MakeApple();
@@ -52,15 +53,27 @@ public class GameManager : MonoBehaviour
             appleObjects[i] = applePool[i].gameObject;
         }
 
+        // 게이지 바 초기화
+        timeSlider.maxValue = timeLimit;
+        currentTime = timeLimit;
+        UpdateTimeUI();
     }
 
-    
+
     private void Update()
     {
-        //if (!isGameOver)
-        //{
-        //    UpdateScore();
-        //}
+        if (!isGameOver)
+        {
+            currentTime -= Time.deltaTime;  // 시간 감소
+            UpdateTimeUI();                 // UI 업데이트
+
+            // 시간 종료 체크
+            if (currentTime <= 0f)
+            {
+                isGameOver = true;
+                GameOver();
+            }
+        }
     }
 
     // 초기 사과 생성 메서드
@@ -71,7 +84,6 @@ public class GameManager : MonoBehaviour
 
         if (appleComponent != null)
         {
-            //appleComponent.Initialize();
             applePool.Add(appleComponent);
         }
     }
@@ -79,20 +91,36 @@ public class GameManager : MonoBehaviour
     // 선택된 사과들 초기화 메서드
     public void ClearSelectedApples()
     {
+        foreach (GameObject apple in selectedApples)
+        {
+            Apple appleComponent = apple.GetComponent<Apple>();
+            if (appleComponent != null)
+            {
+                appleComponent.ShowApple();         // 사과 객체를 다시 보이게 함
+            }
+        }
         selectedApples.Clear();  // 선택된 객체 리스트 초기화
     }
 
     // 사과 드래그 메서드
     public void SelectApplesInDrag(Vector2 rectMinPos, Vector2 rectMaxPos)
-    {
+    {   // 드래그 영역 내에 있는 객체는 선택, 영역 밖으로 나간 객체는 선택 해제
+        // selectedApples 리스트에 추가 또는 제거
+
+        List<GameObject> currentlySelected = new List<GameObject>();    // 현재 드래그 영역 내에 있는 사과를 임시로 저장
         foreach (GameObject apple in appleObjects)
         {
+            Apple appleComponent = apple.GetComponent<Apple>();
+
+            if (appleComponent == null || appleComponent.appleNum == 0) continue;
+
             Vector3 appleScreenPos = Camera.main.WorldToScreenPoint(apple.transform.position);
             appleScreenPos.y = Screen.height - appleScreenPos.y;
 
             if (appleScreenPos.x >= rectMinPos.x && appleScreenPos.x <= rectMaxPos.x &&
                 appleScreenPos.y >= rectMinPos.y && appleScreenPos.y <= rectMaxPos.y)
             {
+                currentlySelected.Add(apple);
                 if (!selectedApples.Contains(apple))
                 {
                     selectedApples.Add(apple);
@@ -100,11 +128,34 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        CalculateApples();
+        List<GameObject> applesToDeselect = new List<GameObject>();     // 드래그 영역에서 벗어난 사과 객체들을 임시로 저장
+        foreach (GameObject apple in selectedApples)
+        {
+            if (!currentlySelected.Contains(apple))
+            {
+                applesToDeselect.Add(apple);
+            }
+        }
+
+        // 요기 다시 체크하기
+        //
+        //
+        //
+        //
+        foreach (GameObject apple in applesToDeselect)
+        {
+            selectedApples.Remove(apple);
+            Apple appleComponent = apple.GetComponent<Apple>();
+
+            if (appleComponent != null)
+            {
+                appleComponent.ShowApple();     // 사과 객체를 다시 보이게 함
+            }
+        }
     }
 
     // 선택한 사과 객체들의 숫자의 합 계산 및 처리 메서드
-    private void CalculateApples()
+    public void CalculateApples()
     {
         int totalAppleNum = 0;
 
@@ -120,6 +171,8 @@ public class GameManager : MonoBehaviour
         if (totalAppleNum == 10)
         {
             HideSelectedApples();
+            AddScore();
+            UpdateScore();
         }
     }
 
@@ -128,14 +181,13 @@ public class GameManager : MonoBehaviour
     {
         foreach (GameObject selectedApple in selectedApples)
         {
-            //selectedApple.SetActive(false);
             Apple appleComponent = selectedApple.GetComponent<Apple>();
             if (appleComponent != null)
             {
-                appleComponent.HideApple(); // 사과 객체 투명하게 만들기
+                appleComponent.HideApple();     // 사과 객체 투명하게 만들기
             }
         }
-        ClearSelectedApples(); // 리스트 초기화
+        //selectedApples.Clear(); // 리스트 초기화
     }
 
     // 선택된 사과 객체들을 반환하는 메서드
@@ -144,10 +196,61 @@ public class GameManager : MonoBehaviour
         return selectedApples;
     }
 
+    // 이전에 선택된 사과들의 숫자 색상을 초기화하는 메서드
+    public void ClearLastSelectedApples()
+    {
+        foreach (GameObject apple in lastSelectedApples)
+        {
+            Apple appleComponent = apple.GetComponent<Apple>();
+            if (appleComponent != null)
+            {
+                appleComponent.ResetNumberColor(); // 사과 숫자 색상을 원래대로 복구
+            }
+        }
+        lastSelectedApples.Clear();
+    }
 
-    //public void UpdateScore()
-    //{
-    //    scoreText.text = score.ToString();
-    //}
+    // 드래그 중에 선택된 사과들의 숫자 색상을 변경하는 메서드
+    public void ChangeSelectedApplesNumberColor(Color color)
+    {
+        // 이전에 선택된 사과들을 초기화
+        ClearLastSelectedApples();
+
+        foreach (GameObject selectedApple in selectedApples)
+        {
+            Apple appleComponent = selectedApple.GetComponent<Apple>();
+            if (appleComponent != null)
+            {
+                appleComponent.ChangeNumberColor(color);    // 사과 숫자 색상을 변경
+                lastSelectedApples.Add(selectedApple);      // 이전에 선택된 사과들 리스트에 추가
+            }
+        }
+    }
+
+    // 점수 추가 메서드
+    private void AddScore()
+    {
+        score += lastSelectedApples.Count * appleScore;
+    }
+
+    // 점수 업데이트 메서드
+    private void UpdateScore()
+    {
+        scoreText.text = score.ToString();
+    }
+    
+    // 현재시간을 게이지바에 반영하는 메서드
+    private void UpdateTimeUI()
+    {
+        timeSlider.value = currentTime;
+    }
+
+    // 게임종료 메서드
+    private void GameOver()
+    {
+        Debug.Log("Game Over!");
+
+        UnityEditor.EditorApplication.isPlaying = false; // 유니티 에디터 종료
+    }
 
 }
