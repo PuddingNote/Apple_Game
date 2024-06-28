@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [Header("--------------[ Game Control ]")]
     private int score = 0;                      // 점수
     private int appleScore = 10;                // 사과 하나의 점수
-    private bool isGameOver;                    // GameOver 판단
+    [HideInInspector]public bool isGameOver;    // GameOver 판단
+
 
     [Header("--------------[ Game Setting ]")]
-    public GameObject applePrefab;              // 
-    public Transform appleGroup;                // 
-    public List<Apple> applePool;               // 
+    public GameObject applePrefab;              // 사과 Prefab
+    public Transform appleGroup;                // 오브젝트 풀링을 저장할 appleGroup
+    public List<Apple> applePool;               // 사과 오브젝트 풀링 리스트
     [Range(0, 120)]
     public int poolSize;                        // 오브젝트 풀링 Size
 
@@ -24,8 +26,10 @@ public class GameManager : MonoBehaviour
 
 
     [Header("--------------[ UI ]")]
-    public TextMeshProUGUI scoreText;           // 
-
+    public TextMeshProUGUI scoreText;           // ScoreGroup의 Score Text
+    public TextMeshProUGUI endScoreText;        // EndGroup의 End ScoreText
+    public GameObject endGroup;                 // Canvas의 EndGroup
+    
     [Header("--------------[ Gaugebar ]")]
     private float timeLimit = 60f;              // 기본 시간 제한(초)
     private float currentTime;                  // 현재 시간
@@ -64,8 +68,8 @@ public class GameManager : MonoBehaviour
     {
         if (!isGameOver)
         {
-            currentTime -= Time.deltaTime;  // 시간 감소
-            UpdateTimeUI();                 // UI 업데이트
+            currentTime -= Time.deltaTime;          // 시간 감소
+            UpdateTimeUI();                         // UI 업데이트
 
             // 시간 종료 체크
             if (currentTime <= 0f)
@@ -99,14 +103,13 @@ public class GameManager : MonoBehaviour
                 appleComponent.ShowApple();         // 사과 객체를 다시 보이게 함
             }
         }
-        selectedApples.Clear();  // 선택된 객체 리스트 초기화
+        selectedApples.Clear();     // 선택된 객체 리스트 초기화
     }
 
     // 사과 드래그 메서드
     public void SelectApplesInDrag(Vector2 rectMinPos, Vector2 rectMaxPos)
-    {   // 드래그 영역 내에 있는 객체는 선택, 영역 밖으로 나간 객체는 선택 해제
-        // selectedApples 리스트에 추가 또는 제거
-
+    {   
+        // 드래그 영역 내 사과 객체 선택 부분
         List<GameObject> currentlySelected = new List<GameObject>();    // 현재 드래그 영역 내에 있는 사과를 임시로 저장
         foreach (GameObject apple in appleObjects)
         {
@@ -128,6 +131,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        // 드래그 영역 밖 사과 객체 선택 해제 부분
         List<GameObject> applesToDeselect = new List<GameObject>();     // 드래그 영역에서 벗어난 사과 객체들을 임시로 저장
         foreach (GameObject apple in selectedApples)
         {
@@ -137,11 +141,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // 요기 다시 체크하기
-        //
-        //
-        //
-        //
         foreach (GameObject apple in applesToDeselect)
         {
             selectedApples.Remove(apple);
@@ -149,7 +148,7 @@ public class GameManager : MonoBehaviour
 
             if (appleComponent != null)
             {
-                appleComponent.ShowApple();     // 사과 객체를 다시 보이게 함
+                appleComponent.ShowApple();                 // 사과 객체를 다시 보이게 함
             }
         }
     }
@@ -184,16 +183,10 @@ public class GameManager : MonoBehaviour
             Apple appleComponent = selectedApple.GetComponent<Apple>();
             if (appleComponent != null)
             {
-                appleComponent.HideApple();     // 사과 객체 투명하게 만들기
+                appleComponent.HideApple();                 // 사과 객체 투명하게 만들기
             }
         }
         //selectedApples.Clear(); // 리스트 초기화
-    }
-
-    // 선택된 사과 객체들을 반환하는 메서드
-    public List<GameObject> GetSelectedApples()
-    {
-        return selectedApples;
     }
 
     // 이전에 선택된 사과들의 숫자 색상을 초기화하는 메서드
@@ -204,7 +197,7 @@ public class GameManager : MonoBehaviour
             Apple appleComponent = apple.GetComponent<Apple>();
             if (appleComponent != null)
             {
-                appleComponent.ResetNumberColor(); // 사과 숫자 색상을 원래대로 복구
+                appleComponent.ResetNumberColor();          // 사과 숫자 색상을 원래대로 복구
             }
         }
         lastSelectedApples.Clear();
@@ -213,7 +206,6 @@ public class GameManager : MonoBehaviour
     // 드래그 중에 선택된 사과들의 숫자 색상을 변경하는 메서드
     public void ChangeSelectedApplesNumberColor(Color color)
     {
-        // 이전에 선택된 사과들을 초기화
         ClearLastSelectedApples();
 
         foreach (GameObject selectedApple in selectedApples)
@@ -225,6 +217,12 @@ public class GameManager : MonoBehaviour
                 lastSelectedApples.Add(selectedApple);      // 이전에 선택된 사과들 리스트에 추가
             }
         }
+    }
+
+    // 선택된 사과 객체들을 반환하는 메서드
+    public List<GameObject> GetSelectedApples()
+    {
+        return selectedApples;
     }
 
     // 점수 추가 메서드
@@ -248,9 +246,9 @@ public class GameManager : MonoBehaviour
     // 게임종료 메서드
     private void GameOver()
     {
-        Debug.Log("Game Over!");
-
-        UnityEditor.EditorApplication.isPlaying = false; // 유니티 에디터 종료
+        scoreText.enabled = false;
+        endScoreText.text = "Score: " + scoreText.text;
+        endGroup.SetActive(true);
     }
 
 }

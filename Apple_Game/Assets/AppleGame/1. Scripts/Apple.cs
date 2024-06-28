@@ -32,12 +32,6 @@ public class Apple : MonoBehaviour
 
     }
 
-
-    private void Update()
-    {
-        
-    }
-
     // 사과 숨기기 메서드
     public void HideApple()
     {

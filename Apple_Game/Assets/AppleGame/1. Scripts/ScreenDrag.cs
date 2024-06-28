@@ -10,11 +10,14 @@ public class ScreenDrag : MonoBehaviour
     private Vector2 rectMaxPos;         // Rect의 최대 지점 좌표
     private bool isDrag = false;        // 드래그 여부
 
-    public GameManager gameManager;
+    public GameManager gameManager;     // 
 
 
     private void Update()
     {
+        // 게임 오버 상태라면 Update 메서드의 나머지 코드를 실행하지 않음
+        if (gameManager.isGameOver) return;
+
         // 드래그 시작 - 이전에 선택된 사과 정보들 초기화
         if (Input.GetMouseButtonDown(0))
         {
@@ -31,7 +34,7 @@ public class ScreenDrag : MonoBehaviour
             gameManager.CalculateApples();
         }
 
-        // 드래그 중일때 좌표 업데이트
+        // 드래그 진행중 - 좌표 업데이트
         if (isDrag)
         {
             currentMousePos = Input.mousePosition;
@@ -41,7 +44,7 @@ public class ScreenDrag : MonoBehaviour
             rectMaxPos = Vector2.Max(currentMousePos, dragStartPos);
 
             gameManager.SelectApplesInDrag(rectMinPos, rectMaxPos);
-            gameManager.ChangeSelectedApplesNumberColor(Color.blue);    // 파란색으로 숫자 색상 변경
+            gameManager.ChangeSelectedApplesNumberColor(Color.green);    // 초록색으로 숫자 색상 변경
         }
     }
 
