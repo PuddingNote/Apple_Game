@@ -26,6 +26,14 @@ public class ScreenDrag : MonoBehaviour
             dragStartPos = Input.mousePosition;
             dragStartPos.y = Screen.height - dragStartPos.y;
         }
+        // 터치 시작
+        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            gameManager.ClearSelectedApples();
+            isDrag = true;
+            dragStartPos = Input.GetTouch(0).position;
+            dragStartPos.y = Screen.height - dragStartPos.y;
+        }
 
         // 드래그 종료 - 선택된 사과 정보들 계산
         if (Input.GetMouseButtonUp(0))
@@ -33,12 +41,28 @@ public class ScreenDrag : MonoBehaviour
             isDrag = false;
             gameManager.CalculateApples();
         }
+        // 터치 종료
+        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+        {
+            isDrag = false;
+            gameManager.CalculateApples();
+        }
 
         // 드래그 진행중 - 좌표 업데이트
         if (isDrag)
-        {
-            currentMousePos = Input.mousePosition;
-            currentMousePos.y = Screen.height - currentMousePos.y;
+        {   
+            // 드래그 진행중
+            if (Input.GetMouseButton(0))
+            {
+                currentMousePos = Input.mousePosition;
+                currentMousePos.y = Screen.height - currentMousePos.y;
+            }
+            // 터치 진행중
+            else if (Input.touchCount > 0)
+            {
+                currentMousePos = Input.GetTouch(0).position;
+                currentMousePos.y = Screen.height - currentMousePos.y;
+            }
 
             rectMinPos = Vector2.Min(currentMousePos, dragStartPos);
             rectMaxPos = Vector2.Max(currentMousePos, dragStartPos);
