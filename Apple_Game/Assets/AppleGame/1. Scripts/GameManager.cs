@@ -44,7 +44,6 @@ public class GameManager : MonoBehaviour
         selectedApples = new List<GameObject>();
         lastSelectedApples = new List<GameObject>();
 
-        // 
         for (int i = 0; i < poolSize; i++)
         {
             MakeApple();
@@ -140,7 +139,6 @@ public class GameManager : MonoBehaviour
                 applesToDeselect.Add(apple);
             }
         }
-
         foreach (GameObject apple in applesToDeselect)
         {
             selectedApples.Remove(apple);

@@ -10,7 +10,7 @@ public class ScreenDrag : MonoBehaviour
     private Vector2 rectMaxPos;         // Rect의 최대 지점 좌표
     private bool isDrag = false;        // 드래그 여부
 
-    public GameManager gameManager;     // 
+    public GameManager gameManager;     
 
 
     private void Update()
