@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class Apple : MonoBehaviour
 {
@@ -39,7 +37,7 @@ public class Apple : MonoBehaviour
         if (appleImage != null)
         {
             Color color = appleImage.color;
-            color.a = 0f;   
+            color.a = 0f;
             appleImage.color = color;
         }
 

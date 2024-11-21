@@ -1,15 +1,15 @@
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 using DG.Tweening;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     [Header("--------------[ Game Control ]")]
     private int score = 0;                      // 점수
     private int appleScore = 10;                // 사과 하나의 점수
-    [HideInInspector]public bool isGameOver;    // GameOver 판단
+    [HideInInspector] public bool isGameOver;    // GameOver 판단
 
 
     [Header("--------------[ Game Setting ]")]
@@ -109,7 +109,7 @@ public class GameManager : MonoBehaviour
 
     // 사과 드래그 메서드
     public void SelectApplesInDrag(Vector2 rectMinPos, Vector2 rectMaxPos)
-    {   
+    {
         // 드래그 영역 내 사과 객체 선택 부분
         List<GameObject> currentlySelected = new List<GameObject>();    // 현재 드래그 영역 내에 있는 사과를 임시로 저장
         foreach (GameObject apple in appleObjects)
@@ -236,7 +236,7 @@ public class GameManager : MonoBehaviour
     {
         scoreText.text = score.ToString();
     }
-    
+
     // 현재시간을 게이지바에 반영하는 메서드
     private void UpdateTimeUI()
     {

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ScreenDrag : MonoBehaviour
@@ -10,7 +8,7 @@ public class ScreenDrag : MonoBehaviour
     private Vector2 rectMaxPos;         // Rect의 최대 지점 좌표
     private bool isDrag = false;        // 드래그 여부
 
-    public GameManager gameManager;     
+    public GameManager gameManager;
 
 
     private void Update()
@@ -50,7 +48,7 @@ public class ScreenDrag : MonoBehaviour
 
         // 드래그 진행중 - 좌표 업데이트
         if (isDrag)
-        {   
+        {
             // 드래그 진행중
             if (Input.GetMouseButton(0))
             {
