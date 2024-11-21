@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,7 +28,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;           // ScoreGroup의 Score Text
     public TextMeshProUGUI endScoreText;        // EndGroup의 End ScoreText
     public GameObject endGroup;                 // Canvas의 EndGroup
-    
+    public RectTransform appleImageRect;        // EndGroup의 Apple Image의 좌표
+
     [Header("--------------[ Gaugebar ]")]
     public float timeLimit = 30f;               // 기본 시간 제한(초)
     private float currentTime;                  // 현재 시간
@@ -248,7 +248,15 @@ public class GameManager : MonoBehaviour
     {
         scoreText.enabled = false;
         endScoreText.text = "Score: " + scoreText.text;
+
+        Vector2 startPosition = new Vector2(appleImageRect.anchoredPosition.x, 1050);
+        appleImageRect.anchoredPosition = startPosition;
+
         endGroup.SetActive(true);
+
+        // DOMoveY로 화면 가운데에 튕기듯이 이동
+        float targetY = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height / 2, 0)).y;
+        appleImageRect.DOMoveY(targetY, 1f).SetEase(Ease.OutBounce);
     }
 
 }
