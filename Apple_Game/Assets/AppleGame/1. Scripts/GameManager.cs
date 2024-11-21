@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     public GameObject endGroup;                 // Canvas의 EndGroup
     
     [Header("--------------[ Gaugebar ]")]
-    private float timeLimit = 60f;              // 기본 시간 제한(초)
+    public float timeLimit = 30f;               // 기본 시간 제한(초)
     private float currentTime;                  // 현재 시간
     public Slider timeSlider;                   // UI에 표시할 게이지 바
 
@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Application.targetFrameRate = 60;       // 프레임 설정
+
+        endGroup.SetActive(false);
 
         applePool = new List<Apple>();
         selectedApples = new List<GameObject>();

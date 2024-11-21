@@ -12,9 +12,9 @@ public class ButtonManager : MonoBehaviour
 
     public void GameEnd()
     {
-#if UNITY_EDITOR    // 에디터에서 실행중인 경우
+#if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-#else               // 빌드된 게임에서 실행중인 경우
+#else
         Application.Quit();
 #endif
     }

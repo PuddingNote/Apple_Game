@@ -1159,6 +1159,7 @@ MonoBehaviour:
   scoreText: {fileID: 1989268993}
   endScoreText: {fileID: 376583666}
   endGroup: {fileID: 1473256665}
+  timeLimit: 30
   timeSlider: {fileID: 65353865}
 --- !u!1 &1302941509
 GameObject:
@@ -1221,7 +1222,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1473256666
 RectTransform:
   m_ObjectHideFlags: 0
