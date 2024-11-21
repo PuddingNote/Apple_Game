@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     [Header("--------------[ Game Control ]")]
     private int score = 0;                      // 점수
     private int appleScore = 10;                // 사과 하나의 점수
-    [HideInInspector] public bool isGameOver;    // GameOver 판단
+    [HideInInspector] public bool isGameOver;   // GameOver 판단
 
 
     [Header("--------------[ Game Setting ]")]
@@ -38,8 +38,6 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        Application.targetFrameRate = 60;       // 프레임 설정
-
         endGroup.SetActive(false);
 
         applePool = new List<Apple>();
@@ -183,10 +181,10 @@ public class GameManager : MonoBehaviour
             Apple appleComponent = selectedApple.GetComponent<Apple>();
             if (appleComponent != null)
             {
-                appleComponent.HideApple();                 // 사과 객체 투명하게 만들기
+                appleComponent.Drop();
             }
         }
-        //selectedApples.Clear(); // 리스트 초기화
+        
     }
 
     // 이전에 선택된 사과들의 숫자 색상을 초기화하는 메서드

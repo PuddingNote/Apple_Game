@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+using System.Collections;
 
 public class Apple : MonoBehaviour
 {
@@ -28,6 +30,45 @@ public class Apple : MonoBehaviour
             childText.text = appleNum.ToString();
         }
 
+    }
+
+    // 사과 떨어지기 메서드
+    public void Drop()
+    {
+        RectTransform rectTransform = GetComponent<RectTransform>();
+        Vector2 startPosition = rectTransform.position;
+        startPosition.y += 0.55f;
+
+        float randomX = Random.Range(-1f, 1f);
+        float jumpHeight = 1f;
+        float animationSpeed = 0.5f;
+        float animationDuration = 3.0f;
+        float startTime = Time.time;
+
+        StartCoroutine(DropCoroutine(startPosition, randomX, jumpHeight, animationSpeed, animationDuration, startTime));
+    }
+
+    private IEnumerator DropCoroutine(Vector2 startPosition, float randomX, float jumpHeight, float speed, float duration, float startTime)
+    {
+        float elapsedTime = 0f;
+        float xMovement = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            xMovement += randomX * Time.deltaTime * 2;
+
+            float t = elapsedTime / speed;
+
+            float x = startPosition.x + xMovement;
+            float y = Mathf.Lerp(startPosition.y, startPosition.y + jumpHeight, t) - Mathf.Pow(t - 0.5f, 2) * jumpHeight * 4;
+
+            transform.position = new Vector2(x, y);
+
+            yield return null;
+        }
+
+        HideApple();
     }
 
     // 사과 숨기기 메서드
