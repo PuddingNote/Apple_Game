@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
     private float currentTime;                  // 현재 시간
     public Slider timeSlider;                   // UI에 표시할 게이지 바
 
+    [Header("--------------[ Effects ]")]
+    public GameObject effectPrefab;             // 원형 이펙트 프리팹
 
     private void Awake()
     {
@@ -167,9 +169,29 @@ public class GameManager : MonoBehaviour
 
         if (totalAppleNum == 10)
         {
+            SpawnEffectsOnSelectedApples();
             HideSelectedApples();
             AddScore();
             UpdateScore();
+        }
+    }
+
+    // 선택된 사과의 위치에 이펙트 생성 메서드
+    private void SpawnEffectsOnSelectedApples()
+    {
+        foreach (GameObject selectedApple in selectedApples)
+        {
+            Vector3 effectPosition = selectedApple.transform.position;
+
+            GameObject effect = Instantiate(effectPrefab, effectPosition, Quaternion.identity, null);
+
+            ParticleSystem particleSystem = effect.GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                particleSystem.Play();
+            }
+
+            Destroy(effect, 1.0f);
         }
     }
 
@@ -184,7 +206,7 @@ public class GameManager : MonoBehaviour
                 appleComponent.Drop();
             }
         }
-        
+
     }
 
     // 이전에 선택된 사과들의 숫자 색상을 초기화하는 메서드

@@ -1162,6 +1162,7 @@ MonoBehaviour:
   appleImageRect: {fileID: 1982297669}
   timeLimit: 30
   timeSlider: {fileID: 65353865}
+  effectPrefab: {fileID: 7601680431473582802, guid: 9fbda3a1f29e22946adfb836fca865a4, type: 3}
 --- !u!1 &1302941509
 GameObject:
   m_ObjectHideFlags: 0
