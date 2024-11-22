@@ -1,2 +1,75 @@
 # Apple_Game
 사과게임
+
+[2024-06-19]
+- Project Setting
+- Add Apple Prefab
+- Add Apple Object Pooling
+</br>
+
+[2024-06-26]
+- Fix Apple Group
+  - Grid Layout Group Error
+    - 객체가 비활성화될 때 해당 위치가 비워지는 것이 아닌, 나머지 자식들이 자동으로 재정렬되어서 문제 발생. 비활성화대신 투명하게 제작.
+- Add Drag System
+  - Add Select System
+    - 드래그 범위 내 사과 선택 처리
+  - Add Hide System
+    - 사과 이미지 투명화, 텍스트 비활성화 후 값 초기화
+</br>
+
+[2024-06-27]
+- Fix Drag System
+  - 드래그 범위 내 사과 선택 처리 수정
+    - 사과 선택 효과 때문에 드래그 상시 업데이트로 변경
+- Refact Select System
+  - 드래그중에 범위 내에 선택된 사과의 색 변환 효과 구현
+- Add Score System & UI
+- Add Timer System & GaugeBar UI
+  - Slider 사용
+</br>
+
+[2024-06-28]
+- Add TitleScene
+- Add GameOver UI
+  - GameScene에 EndGroup 제작
+- Change Apple Image
+- 코드 정리
+</br>
+
+[2024-07-01]
+- Add Modile Touch System
+  - 모바일 터치 기능 추가 완료
+- Build Test
+  - 윈도우 빌드 테스트 완료
+- 1차 제작 완료
+</br>
+
+[2024-07-18]
+- 코드 정리
+</br>
+
+[2024-11-21]
+- Add Dotween Asset
+- Fix GameScene
+  - 게임 오버시 EndGroup 화면이 위에서 아래로 떨어지는 애니메이션 추가 (Dotween)
+- Add Apple Animation
+  - 사과들을 없앨때 포물선을 그리며 떨어지는 애니메이션 추가 (Code)
+- 코드 정리
+</br>
+
+[2024-11-22]
+- Add Particle System Prefab
+  - Add Apple Effect
+    - 사과들을 없앨때 이펙트 추가 (Particle System)
+- Fix Particle System
+  - 조금 더 자연스럽게 수정
+- Fix TitleScene
+  - TitleScene UI 수정
+- Fix GameScene
+  - Reset 기능 추가
+  - GameOver UI 수정
+- 코드 정리
+- Build Test
+- 제작 완료
+</br>
