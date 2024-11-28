@@ -1,11 +1,19 @@
-# Apple_Game
-사과게임
+# Apple Game (사과게임)
 
 <img src="https://github.com/user-attachments/assets/96e0ee16-8ebd-447e-a754-8b9d2573e154" width="250"></img>
 <img src="https://github.com/user-attachments/assets/19d4121b-3a18-4945-8a5f-39dcb5e4305c" width="250"></img>
 <img src="https://github.com/user-attachments/assets/3a832fd3-527a-4c4c-bcf1-cd8943e61313" width="250"></img>
 </br>
 
+## 1. 게임 메커니즘
+  - 사과의 합이 10이 되도록 드래그하여 점수를 획득하는 게임
+## 2. 주요 목표
+  - 주어진 시간내에 가능한 한 많은 사과를 합쳐 높은 점수를 기록
+## 3. 개발 환경
+  - Unity, C#
+</br>
+
+## 개발 일지
 [2024-06-19]
 - Project Setting
 - Add Apple Prefab
