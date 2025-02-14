@@ -30,13 +30,16 @@ public class GameManager : MonoBehaviour
     public GameObject endGroup;                 // Canvas의 EndGroup
     public RectTransform appleImageRect;        // EndGroup의 Apple Image의 좌표
 
+
     [Header("--------------[ Gaugebar ]")]
     public float timeLimit;                     // 기본 시간 제한(초)
     private float currentTime;                  // 현재 시간
     public Slider timeSlider;                   // UI에 표시할 게이지 바
 
+
     [Header("--------------[ Effects ]")]
     public GameObject effectPrefab;             // 원형 이펙트 프리팹
+
 
     private void Awake()
     {
