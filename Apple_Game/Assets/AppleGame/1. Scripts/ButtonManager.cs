@@ -22,11 +22,7 @@ public class ButtonManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || (Application.platform == RuntimePlatform.Android && Input.GetKey(KeyCode.Escape)))
         {
-            if (escPanel.activeSelf)
-            {
-                escPanel.SetActive(false);
-            }
-            else
+            if (!escPanel.activeSelf)
             {
                 escPanel.SetActive(true);
             }
