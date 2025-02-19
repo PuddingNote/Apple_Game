@@ -10,17 +10,34 @@ public class ButtonManager : MonoBehaviour
     private void Start()
     {
         mainCanvas = FindObjectOfType<Canvas>();
-        escPanel = mainCanvas.transform.Find("Quit Panel").gameObject;
+
+        InitializePausePanel();
+    }
+
+    private void InitializePausePanel()
+    {
+        escPanel = mainCanvas.transform.Find("Pause Panel").gameObject;
+
         Button backButton = escPanel.transform.Find("BackGround/Back Button").GetComponent<Button>();
-        Button titleButton = escPanel.transform.Find("BackGround/Title Button").GetComponent<Button>();
         backButton.onClick.AddListener(() => escPanel.SetActive(false));
+
+        Button titleButton = escPanel.transform.Find("BackGround/Title Button").GetComponent<Button>();
         titleButton.onClick.AddListener(() => GoTitle());
+
         escPanel.SetActive(false);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || (Application.platform == RuntimePlatform.Android && Input.GetKey(KeyCode.Escape)))
+        HandleEscapeInput();
+    }
+
+    private void HandleEscapeInput()
+    {
+        bool escapePressed = Input.GetKeyDown(KeyCode.Escape);
+        bool androidBackPressed = Application.platform == RuntimePlatform.Android && Input.GetKey(KeyCode.Escape);
+
+        if (escapePressed || androidBackPressed)
         {
             if (!escPanel.activeSelf)
             {
@@ -29,7 +46,7 @@ public class ButtonManager : MonoBehaviour
         }
     }
 
-    public void GameStart()
+    public void StartGame()
     {
         SceneManager.LoadScene("GameScene");
     }
@@ -39,7 +56,7 @@ public class ButtonManager : MonoBehaviour
         SceneManager.LoadScene("TitleScene");
     }
 
-    public void GameEnd()
+    public void QuitGame()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
