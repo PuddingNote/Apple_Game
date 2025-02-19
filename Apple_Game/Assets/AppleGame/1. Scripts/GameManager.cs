@@ -207,7 +207,7 @@ public class GameManager : MonoBehaviour
             Apple appleComponent = selectedApple.GetComponent<Apple>();
             if (appleComponent != null)
             {
-                appleComponent.Drop();
+                appleComponent.DropApple();
             }
         }
 

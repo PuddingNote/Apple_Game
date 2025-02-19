@@ -1,19 +1,22 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
 using System.Collections;
 
 public class Apple : MonoBehaviour
 {
-    [HideInInspector] public int appleNum;              // 사과 보유번호
-    [HideInInspector] public TextMeshProUGUI childText; // 사과 보유번호 UI
-    private Image appleImage;                           // 사과 이미지
-    private Color originalColor;                        // 사과 이미지의 원래 색상
-    private Color originalNumberColor;                  // 사과 숫자의 원래 색상
-
+    [HideInInspector] public int appleNum;                  // 사과 보유번호
+    [HideInInspector] public TextMeshProUGUI childText;     // 사과 보유번호 UI
+    private Image appleImage;                               // 사과 이미지
+    private Color originalColor;                            // 사과 이미지의 기존 색상
+    private Color originalNumberColor;                      // 사과 보유번호의 기존 색상
 
     private void Awake()
+    {
+        InitializeApple();
+    }
+
+    private void InitializeApple()
     {
         appleNum = Random.Range(1, 10);
         appleImage = GetComponent<Image>();
@@ -26,29 +29,21 @@ public class Apple : MonoBehaviour
 
         if (childText != null)
         {
-            originalNumberColor = childText.color;  // 원래 사과 숫자 색상 저장
+            originalNumberColor = childText.color;
             childText.text = appleNum.ToString();
         }
-
     }
 
-    // 사과 떨어지기 메서드
-    public void Drop()
+    public void DropApple()
     {
-        RectTransform rectTransform = GetComponent<RectTransform>();
-        Vector2 startPosition = rectTransform.position;
+        Vector2 startPosition = GetComponent<RectTransform>().position;
         startPosition.y += 0.55f;
 
         float randomX = Random.Range(-1f, 1f);
-        float jumpHeight = 1f;
-        float animationSpeed = 0.5f;
-        float animationDuration = 3.0f;
-        float startTime = Time.time;
-
-        StartCoroutine(DropCoroutine(startPosition, randomX, jumpHeight, animationSpeed, animationDuration, startTime));
+        StartCoroutine(DropAppleCoroutine(startPosition, randomX, 1f, 0.5f, 3.0f));
     }
 
-    private IEnumerator DropCoroutine(Vector2 startPosition, float randomX, float jumpHeight, float speed, float duration, float startTime)
+    private IEnumerator DropAppleCoroutine(Vector2 startPosition, float randomX, float jumpHeight, float speed, float duration)
     {
         float elapsedTime = 0f;
         float xMovement = 0f;
@@ -59,22 +54,18 @@ public class Apple : MonoBehaviour
             xMovement += randomX * Time.deltaTime * 2;
 
             float t = elapsedTime / speed;
-
             float x = startPosition.x + xMovement;
             float y = Mathf.Lerp(startPosition.y, startPosition.y + jumpHeight, t) - Mathf.Pow(t - 0.5f, 2) * jumpHeight * 4;
 
             transform.position = new Vector2(x, y);
-
             yield return null;
         }
 
         HideApple();
     }
 
-    // 사과 숨기기 메서드
     public void HideApple()
     {
-        // 사과 투명하게 만들기
         if (appleImage != null)
         {
             Color color = appleImage.color;
@@ -82,36 +73,32 @@ public class Apple : MonoBehaviour
             appleImage.color = color;
         }
 
-        // 자식 오브젝트 비활성화 = 보유한 숫자
-        foreach (Transform child in this.transform)
+        foreach (Transform child in transform)
         {
             child.gameObject.SetActive(false);
         }
 
-        this.appleNum = 0;  // 사라진 사과의 번호를 0으로 초기화
+        appleNum = 0;
     }
 
-    // 사과 보이기 메서드
     public void ShowApple()
     {
-        // appleNum이 0인 사과는 다시 보이지 않음 = 이미 선택되고 사라진 사과들
-        if (this.appleNum == 0) return;
+        if (appleNum == 0)
+        {
+            return;
+        }
 
-        // 사과 다시 보이게 만들기
         if (appleImage != null)
         {
             appleImage.color = originalColor;
         }
 
-        // 자식 오브젝트 활성화 = 보유한 숫자
-        foreach (Transform child in this.transform)
+        foreach (Transform child in transform)
         {
             child.gameObject.SetActive(true);
         }
-
     }
 
-    // 사과 숫자 색상을 변경하는 메서드
     public void ChangeNumberColor(Color color)
     {
         if (childText != null)
@@ -120,7 +107,6 @@ public class Apple : MonoBehaviour
         }
     }
 
-    // 사과 숫자 색상을 원래대로 복구하는 메서드
     public void ResetNumberColor()
     {
         if (childText != null)

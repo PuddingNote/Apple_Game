@@ -10,7 +10,6 @@ public class ScreenDrag : MonoBehaviour
     private Vector2 rectMaxPos;
     private bool isDrag;
 
-    // 매 프레임마다 드래그 상태를 업데이트
     private void Update()
     {
         if (gameManager.isGameOver || buttonManager.IsActiveEscPanel())
@@ -38,7 +37,6 @@ public class ScreenDrag : MonoBehaviour
         }
     }
 
-    // 드래그 시작 시 초기 설정
     private void StartDrag(Vector2 startPosition)
     {
         gameManager.ClearSelectedApples();
@@ -47,14 +45,12 @@ public class ScreenDrag : MonoBehaviour
         dragStartPos = ConvertToScreenPosition(startPosition);
     }
 
-    // 드래그 종료 시 처리
     private void EndDrag()
     {
         isDrag = false;
         gameManager.CalculateApples();
     }
 
-    // 드래그 중인 상태를 업데이트
     private void UpdateDrag()
     {
         Vector2 currentMousePos = ConvertToScreenPosition(Input.mousePosition);
