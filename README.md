@@ -1,8 +1,8 @@
 # Apple Game (사과게임)
 
-<img src="https://github.com/user-attachments/assets/96e0ee16-8ebd-447e-a754-8b9d2573e154" width="250"></img>
-<img src="https://github.com/user-attachments/assets/19d4121b-3a18-4945-8a5f-39dcb5e4305c" width="250"></img>
-<img src="https://github.com/user-attachments/assets/3a832fd3-527a-4c4c-bcf1-cd8943e61313" width="250"></img>
+<img src="https://github.com/user-attachments/assets/d4e3fa70-99dc-4d55-b06d-218629e0b1ad" width="250"></img>
+<img src="https://github.com/user-attachments/assets/99bf42e0-72ef-4c2f-aab1-14b9089b70fe" width="250"></img>
+<img src="https://github.com/user-attachments/assets/32779068-ef92-406a-9a32-06af56553bd8" width="250"></img>
 </br>
 
 ## 1. 게임 메커니즘
