@@ -544,7 +544,7 @@ GameObject:
   - component: {fileID: 227121591}
   - component: {fileID: 227121592}
   m_Layer: 0
-  m_Name: ScreenManager
+  m_Name: ScreenDragManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -578,6 +578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1266444938}
+  buttonManager: {fileID: 1302941510}
 --- !u!1 &249517519
 GameObject:
   m_ObjectHideFlags: 0

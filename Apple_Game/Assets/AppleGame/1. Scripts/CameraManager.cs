@@ -34,5 +34,4 @@ public class CameraManager : MonoBehaviour
         mainCamera.rect = rect;
     }
 
-
 }

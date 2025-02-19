@@ -7,7 +7,7 @@ public class ButtonManager : MonoBehaviour
     private Canvas mainCanvas;
     private GameObject escPanel;
 
-    private void Start()
+    private void Awake()
     {
         mainCanvas = FindObjectOfType<Canvas>();
 
@@ -44,6 +44,15 @@ public class ButtonManager : MonoBehaviour
                 escPanel.SetActive(true);
             }
         }
+    }
+
+    public bool IsActiveEscPanel()
+    {
+        if (escPanel.activeSelf)
+        {
+            return true;
+        }
+        return false;
     }
 
     public void StartGame()
