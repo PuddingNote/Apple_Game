@@ -45,7 +45,7 @@ public class ScreenDrag : MonoBehaviour
         dragStartPos = ConvertToScreenPosition(startPosition);
     }
 
-    private void EndDrag()
+    public void EndDrag()
     {
         isDrag = false;
         gameManager.CalculateApples();

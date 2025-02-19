@@ -380,7 +380,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Drag to get a total of 10
+  m_text: 'Drag to get a total of 10
+
+
+    Combine more than 3, Bonus Score!!'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1629,18 +1632,13 @@ MonoBehaviour:
   isGameOver: 0
   applePrefab: {fileID: 3080073085530218727, guid: f03bca71b802bf44eb36b94645d26ba0, type: 3}
   appleGroup: {fileID: 996516088}
-  applePool: []
-  poolSize: 120
-  appleObjects: []
-  selectedApples: []
-  lastSelectedApples: []
   scoreText: {fileID: 1989268993}
   endScoreText: {fileID: 376583666}
   endGroup: {fileID: 1473256665}
   appleImageRect: {fileID: 1982297669}
-  timeLimit: 60
   timeSlider: {fileID: 65353865}
   effectPrefab: {fileID: 7601680431473582802, guid: 9fbda3a1f29e22946adfb836fca865a4, type: 3}
+  screenDrag: {fileID: 227121592}
 --- !u!1 &1302941509
 GameObject:
   m_ObjectHideFlags: 0
