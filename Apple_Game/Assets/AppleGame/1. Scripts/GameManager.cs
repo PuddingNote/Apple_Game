@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI endScoreText;            // EndGroup의 End ScoreText
     public GameObject endGroup;                     // Canvas의 EndGroup
     public RectTransform appleImageRect;            // EndGroup의 Apple Image의 좌표
+    public TextMeshProUGUI timeText;                // 남은 시간을 표시할 Text
 
     [Header("--------------[ Gaugebar ]")]
     public Slider timeSlider;                       // UI에 표시할 게이지바
@@ -248,6 +249,7 @@ public class GameManager : MonoBehaviour
     private void UpdateTimeUI()
     {
         timeSlider.value = currentTime;
+        timeText.text = Mathf.CeilToInt(currentTime).ToString();
     }
 
     private void GameOver()
@@ -255,7 +257,6 @@ public class GameManager : MonoBehaviour
         screenDrag.EndDrag();
         ClearLastSelectedApples();
 
-        scoreText.enabled = false;
         endScoreText.text = "Score: " + scoreText.text;
 
         Vector2 startPosition = new Vector2(appleImageRect.anchoredPosition.x, 1050);
