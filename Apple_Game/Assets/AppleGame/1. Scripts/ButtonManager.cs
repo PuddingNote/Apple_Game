@@ -57,10 +57,11 @@ public class ButtonManager : MonoBehaviour
         dragButtonImage = dragButton.GetComponent<Image>();
         clickButtonImage = clickButton.GetComponent<Image>();
 
-        SetDragMode();
-
         dragButton.GetComponent<Button>().onClick.AddListener(SetDragMode);
         clickButton.GetComponent<Button>().onClick.AddListener(SetClickMode);
+
+        // SelectModeManager의 현재 모드에 따라 버튼 UI 상태 업데이트
+        UpdateSelectModeButtonUI(selectMode.GetCurrentMode() == SelectModeManager.SelectMode.Drag);
     }
 
     // 드래그 모드 설정

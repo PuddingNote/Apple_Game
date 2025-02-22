@@ -25,9 +25,12 @@ public class SelectModeManager : MonoBehaviour
     }
     private SelectMode currentDragMode = SelectMode.Drag;
 
+    private const string DRAG_MODE_KEY = "DragMode";  // PlayerPrefs 키값
+
     private void Awake()
     {
         mainCamera = Camera.main;
+        LoadSavedMode();
     }
 
     private void Update()
@@ -45,6 +48,13 @@ public class SelectModeManager : MonoBehaviour
         }
     }
 
+    // 저장된 모드 불러오기
+    private void LoadSavedMode()
+    {
+        int savedMode = PlayerPrefs.GetInt(DRAG_MODE_KEY, 0);
+        currentDragMode = savedMode == 0 ? SelectMode.Drag : SelectMode.Click;
+    }
+
     // 선택 모드 설정 및 상태 초기화
     public void SetSelectMode(SelectMode mode)
     {
@@ -53,6 +63,10 @@ public class SelectModeManager : MonoBehaviour
         isSelected = false;
         gameManager.ClearSelectedApples();
         gameManager.ClearLastSelectedApples();
+
+        // 모드 변경 시 PlayerPrefs에 저장
+        PlayerPrefs.SetInt(DRAG_MODE_KEY, mode == SelectMode.Drag ? 0 : 1);
+        PlayerPrefs.Save();
     }
 
     // 입력을 처리하여 모드에 따라 동작 수행
@@ -245,6 +259,12 @@ public class SelectModeManager : MonoBehaviour
         return position;
     }
 
+    // 현재 선택 모드를 반환하는 함수 추가
+    public SelectMode GetCurrentMode()
+    {
+        return currentDragMode;
+    }
+
     // 드래그 모드에서 선택 영역을 GUI로 표시
     private void OnGUI()
     {
@@ -256,5 +276,5 @@ public class SelectModeManager : MonoBehaviour
         Rect selectionRect = new Rect(rectMinPos, rectMaxPos - rectMinPos);
         GUI.Box(selectionRect, "");
     }
-    
+
 }
