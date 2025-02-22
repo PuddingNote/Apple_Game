@@ -1,9 +1,10 @@
 # Apple Game (사과게임)
 
-<img src="https://github.com/user-attachments/assets/d4e3fa70-99dc-4d55-b06d-218629e0b1ad" width="250"></img>
-<img src="https://github.com/user-attachments/assets/99bf42e0-72ef-4c2f-aab1-14b9089b70fe" width="250"></img>
-<img src="https://github.com/user-attachments/assets/32779068-ef92-406a-9a32-06af56553bd8" width="250"></img>
+<img src="https://github.com/user-attachments/assets/09287781-b86d-44c8-8ea6-2ac904f485ae" width="250"></img>
+<img src="https://github.com/user-attachments/assets/20501fae-782f-426c-a269-b2ece03a1d26" width="250"></img>
+<img src="https://github.com/user-attachments/assets/3d0a8e88-f1b7-4f4a-8f13-09f02585a182" width="250"></img>
 </br>
+
 
 ## 1. 게임 메커니즘
   - 사과의 합이 10이 되도록 드래그하여 점수를 획득하는 게임
@@ -107,6 +108,37 @@
 - 전체 코드 리팩토링
 - 추가 점수 기능 구현
 - 버그 수정
+- Build Setting
+  - 빌드 버전 변경
+  - 안드로이드 빌드 버전 변경
+</br>
+
+[2025-02-21] - ver0.1.3
+- 전체 코드 리팩토링
+- UI 추가 및 적용
+  - 타이머 숫자 UI 적용
+- 폰트 추가 및 적용
+- Build Setting
+  - 빌드 버전 변경
+  - 안드로이드 빌드 버전 변경
+</br>
+
+[2025-02-21] - ver0.1.4
+- UI 추가 및 적용
+  - 타이머 숫자 UI 적용
+- 폰트 추가 및 적용
+- 전체 코드 리팩토링
+- Build Setting
+  - 빌드 버전 변경
+  - 안드로이드 빌드 버전 변경
+</br>
+
+[2025-02-22] - ver0.1.5
+- 드래그 기능 강화 및 클릭 모드 추가
+  - 드래그 판정 수정
+  - 클릭 모드 추가
+- 모드 저장 기능 추가
+- 전체 코드 리팩토링
 - Build Setting
   - 빌드 버전 변경
   - 안드로이드 빌드 버전 변경
