@@ -16,10 +16,11 @@ public class GameManager : MonoBehaviour
     public Transform appleGroup;                    // 오브젝트 풀링을 설정할 사과 부모 오브젝트
     private List<Apple> applePool;                  // 사과 오브젝트 풀
     private int poolSize = 120;                     // 오브젝트 풀 Size
+    private int targetCount = 3;                    // 보너스 점수를 위한 사과 객체 카운트
 
-    private GameObject[] appleObjects;              // 씬에 있는 모든 사과 객체 배열
-    private List<GameObject> selectedApples;        // 현재 선택된 사과들
-    private List<GameObject> lastSelectedApples;    // 이전에 선택된 사과들
+    [HideInInspector] public GameObject[] appleObjects;             // 활성화된 사과 배열
+    [HideInInspector] public List<GameObject> selectedApples;       // 현재 선택된 사과들
+    [HideInInspector] public List<GameObject> lastSelectedApples;   // 이전에 선택된 사과들
 
     [Header("--------------[ UI ]")]
     public TextMeshProUGUI scoreText;               // ScoreGroup의 Score Text
@@ -37,11 +38,8 @@ public class GameManager : MonoBehaviour
     public GameObject effectPrefab;                 // 이펙트 프리팹
 
     [Header("--------------[ ETC ]")]
-    public ScreenDrag screenDrag;                   // ScreenDrag 참조
+    public SelectModeManager selectMode;            // SelectModeManager 참조
     private Camera mainCamera;                      // mainCamera 참조
-
-
-
 
     private void Awake()
     {
@@ -62,9 +60,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
-
-
 
     private void InitializeGame()
     {
@@ -105,108 +100,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 드래그 영역 내의 사과들을 선택하는 메서드 수정
-    public void SelectApplesInDrag(Vector2 rectMinPos, Vector2 rectMaxPos)
-    {
-        List<GameObject> currentlySelected = new List<GameObject>(poolSize);
-
-        foreach (GameObject apple in appleObjects)
-        {
-            Apple appleComponent = apple.GetComponent<Apple>();
-            if (appleComponent == null || appleComponent.appleNum == 0)
-            {
-                continue;
-            }
-
-            // 사과의 RectTransform 정보 가져오기
-            RectTransform rectTransform = apple.GetComponent<RectTransform>();
-            Vector3 appleScreenPos = mainCamera.WorldToScreenPoint(apple.transform.position);
-            appleScreenPos.y = Screen.height - appleScreenPos.y;
-
-            // 사과의 경계 영역 계산
-            float halfWidth = rectTransform.rect.width * 0.4f;
-            float halfHeight = rectTransform.rect.height * 0.4f;
-
-            Rect appleRect = new Rect(
-                appleScreenPos.x - halfWidth,
-                appleScreenPos.y - halfHeight,
-                halfWidth * 2,
-                halfHeight * 2
-            );
-
-            // 드래그 영역과 사과 영역이 겹치는지 확인
-            Rect dragRect = new Rect(
-                rectMinPos.x,
-                rectMinPos.y,
-                rectMaxPos.x - rectMinPos.x,
-                rectMaxPos.y - rectMinPos.y
-            );
-
-            if (dragRect.Overlaps(appleRect))
-            {
-                currentlySelected.Add(apple);
-                if (!selectedApples.Contains(apple))
-                {
-                    selectedApples.Add(apple);
-                }
-            }
-        }
-
-        // 선택 해제된 사과들 처리
-        List<GameObject> applesToDeselect = new List<GameObject>();
-        foreach (GameObject apple in selectedApples)
-        {
-            if (!currentlySelected.Contains(apple))
-            {
-                applesToDeselect.Add(apple);
-            }
-        }
-        foreach (GameObject apple in applesToDeselect)
-        {
-            selectedApples.Remove(apple);
-            Apple appleComponent = apple.GetComponent<Apple>();
-            appleComponent.ShowApple();
-        }
-    }
-
-    // 주어진 화면 좌표에 위치한 사과 객체를 반환
-    public GameObject GetAppleAtPosition(Vector2 screenPos)
-    {
-        foreach (GameObject apple in appleObjects)
-        {
-            Apple appleComponent = apple.GetComponent<Apple>();
-            if (appleComponent == null || appleComponent.appleNum == 0)
-                continue;
-
-            RectTransform rectTransform = apple.GetComponent<RectTransform>();
-            Vector3 appleScreenPos = mainCamera.WorldToScreenPoint(apple.transform.position);
-            appleScreenPos.y = Screen.height - appleScreenPos.y;
-
-            float halfWidth = rectTransform.rect.width * 0.5f;
-            float halfHeight = rectTransform.rect.height * 0.5f;
-
-            if (screenPos.x >= appleScreenPos.x - halfWidth &&
-                screenPos.x <= appleScreenPos.x + halfWidth &&
-                screenPos.y >= appleScreenPos.y - halfHeight &&
-                screenPos.y <= appleScreenPos.y + halfHeight)
-            {
-                return apple;
-            }
-        }
-        return null;
-    }
-
-    // 클릭한 사과 추가
-    public void AddClickedApple(GameObject apple)
-    {
-        selectedApples.Add(apple);
-        lastSelectedApples.Add(apple);
-        apple.GetComponent<Apple>().ChangeNumberColor(Color.green);
-    }
-
-
-
-
     // 선택된 사과들의 합 계산
     public void CalculateApples()
     {
@@ -224,7 +117,7 @@ public class GameManager : MonoBehaviour
         if (totalAppleNum == 10)
         {
             SpawnEffectsOnSelectedApples();
-            HideSelectedApples();
+            DropSelectedApples();
             AddScore();
             UpdateScore();
         }
@@ -246,8 +139,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 선택된 사과를 숨기기
-    private void HideSelectedApples()
+    // 선택된 사과를 떨어뜨리기
+    private void DropSelectedApples()
     {
         foreach (GameObject selectedApple in selectedApples)
         {
@@ -294,15 +187,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
-
     private void AddScore()
     {
         int additionalScore = 0;
-        int targetCount = 2;
 
-        if (lastSelectedApples.Count > targetCount)
+        if (lastSelectedApples.Count >= targetCount)
         {
             additionalScore = (lastSelectedApples.Count - targetCount) * 5;
         }
@@ -322,7 +211,7 @@ public class GameManager : MonoBehaviour
 
     private void GameOver()
     {
-        screenDrag.EndNormalDrag();
+        selectMode.EndDrag();
         ClearLastSelectedApples();
 
         endScoreText.text = "Score: " + scoreText.text;

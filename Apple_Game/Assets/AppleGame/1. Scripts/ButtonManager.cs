@@ -13,12 +13,9 @@ public class ButtonManager : MonoBehaviour
     private Color unselectedButtonColor = new Color(0f / 255f, 0f / 255f, 0f / 255f, 150f / 255f);
 
     [Header("--------------[ ETC ]")]
-    public ScreenDrag screenDrag;           // ScreenDrag 참조
+    public SelectModeManager selectMode;    // SelectModeManager 참조
     private Canvas mainCanvas;              // Canvas 참조
     private GameObject escPanel;            // 일시정지 패널
-
-
-
 
     private void Awake()
     {
@@ -39,8 +36,6 @@ public class ButtonManager : MonoBehaviour
     {
         HandleEscInput();
     }
-
-
 
     // 일시정지 패널 설정 초기화
     private void InitializePausePanel()
@@ -71,19 +66,19 @@ public class ButtonManager : MonoBehaviour
     // 드래그 모드 설정
     public void SetDragMode()
     {
-        screenDrag.SetDragMode(ScreenDrag.SelectMode.Drag);
-        UpdateModeButtonVisuals(true);
+        selectMode.SetSelectMode(SelectModeManager.SelectMode.Drag);
+        UpdateSelectModeButtonUI(true);
     }
 
     // 클릭 모드 설정
     public void SetClickMode()
     {
-        screenDrag.SetDragMode(ScreenDrag.SelectMode.Click);
-        UpdateModeButtonVisuals(false);
+        selectMode.SetSelectMode(SelectModeManager.SelectMode.Click);
+        UpdateSelectModeButtonUI(false);
     }
 
     // 게임 모드 버튼 시각적 업데이트
-    private void UpdateModeButtonVisuals(bool isNormalMode)
+    private void UpdateSelectModeButtonUI(bool isNormalMode)
     {
         dragButtonImage.color = isNormalMode ? selectedButtonColor : unselectedButtonColor;
         clickButtonImage.color = isNormalMode ? unselectedButtonColor : selectedButtonColor;

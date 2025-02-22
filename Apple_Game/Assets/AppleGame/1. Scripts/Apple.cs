@@ -11,16 +11,10 @@ public class Apple : MonoBehaviour
     private Color originalColor;                            // 사과 이미지의 기존 색상
     private Color originalNumberColor;                      // 사과 보유번호의 기존 색상
 
-
-
-
     private void Awake()
     {
         InitializeApple();
     }
-
-
-
 
     private void InitializeApple()
     {
