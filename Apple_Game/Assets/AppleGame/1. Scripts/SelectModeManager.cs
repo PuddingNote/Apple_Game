@@ -25,7 +25,7 @@ public class SelectModeManager : MonoBehaviour
     }
     private SelectMode currentDragMode = SelectMode.Drag;
 
-    private const string DRAG_MODE_KEY = "DragMode";  // PlayerPrefs 키값
+    private const string SELECT_MODE_KEY = "SelectMode";        // PlayerPrefs 키값
 
     private void Awake()
     {
@@ -51,7 +51,7 @@ public class SelectModeManager : MonoBehaviour
     // 저장된 모드 불러오기
     private void LoadSavedMode()
     {
-        int savedMode = PlayerPrefs.GetInt(DRAG_MODE_KEY, 0);
+        int savedMode = PlayerPrefs.GetInt(SELECT_MODE_KEY, 0);
         currentDragMode = savedMode == 0 ? SelectMode.Drag : SelectMode.Click;
     }
 
@@ -65,7 +65,7 @@ public class SelectModeManager : MonoBehaviour
         gameManager.ClearLastSelectedApples();
 
         // 모드 변경 시 PlayerPrefs에 저장
-        PlayerPrefs.SetInt(DRAG_MODE_KEY, mode == SelectMode.Drag ? 0 : 1);
+        PlayerPrefs.SetInt(SELECT_MODE_KEY, mode == SelectMode.Drag ? 0 : 1);
         PlayerPrefs.Save();
     }
 
@@ -147,9 +147,9 @@ public class SelectModeManager : MonoBehaviour
             Vector3 appleScreenPos = mainCamera.WorldToScreenPoint(apple.transform.position);
             appleScreenPos.y = Screen.height - appleScreenPos.y;
 
-            // 사과의 경계 영역 계산 (50% 크기)
-            float halfWidth = rectTransform.rect.width * 0.25f;
-            float halfHeight = rectTransform.rect.height * 0.25f;
+            // 사과의 경계 영역 계산
+            float halfWidth = rectTransform.rect.width * 0.4f;
+            float halfHeight = rectTransform.rect.height * 0.4f;
 
             Rect appleRect = new Rect(
                 appleScreenPos.x - halfWidth,
@@ -208,8 +208,8 @@ public class SelectModeManager : MonoBehaviour
             Vector3 appleScreenPos = mainCamera.WorldToScreenPoint(apple.transform.position);
             appleScreenPos.y = Screen.height - appleScreenPos.y;
 
-            float halfWidth = rectTransform.rect.width * 0.25f;
-            float halfHeight = rectTransform.rect.height * 0.25f;
+            float halfWidth = rectTransform.rect.width * 0.5f;
+            float halfHeight = rectTransform.rect.height * 0.5f;
 
             if (screenPos.x >= appleScreenPos.x - halfWidth &&
                 screenPos.x <= appleScreenPos.x + halfWidth &&
