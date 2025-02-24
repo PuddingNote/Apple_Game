@@ -121,6 +121,16 @@ public class SelectModeManager : MonoBehaviour
                 rectMaxPos = Vector2.Max(firstClickPos, secondClickPos);
 
                 SelectApplesInDrag(rectMinPos, rectMaxPos);
+
+                // 선택된 모든 사과를 lastSelectedApples에 추가
+                foreach (GameObject apple in gameManager.selectedApples)
+                {
+                    if (!gameManager.lastSelectedApples.Contains(apple))
+                    {
+                        gameManager.lastSelectedApples.Add(apple);
+                    }
+                }
+
                 gameManager.CalculateApples();
                 gameManager.ChangeSelectedApplesNumberColor(Color.green);
 

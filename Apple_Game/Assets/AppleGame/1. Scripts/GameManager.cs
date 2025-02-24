@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
 
         if (lastSelectedApples.Count >= targetCount)
         {
-            additionalScore = (lastSelectedApples.Count - targetCount) * 5;
+            additionalScore = (lastSelectedApples.Count - (targetCount - 1)) * 5;
         }
         score += (lastSelectedApples.Count * appleScore) + additionalScore;
     }
