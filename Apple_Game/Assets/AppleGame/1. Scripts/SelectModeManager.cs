@@ -8,9 +8,6 @@ public class SelectModeManager : MonoBehaviour
     private Vector2 rectMaxPos;             // 선택 영역 최대 좌표
     private bool isDrag;                    // 드래그 상태 여부
 
-    private Vector2 firstClickPos;          // 첫번째 클릭 좌표
-    private bool isSelected;                // 사과 선택 여부 (클릭)
-
     [Header("--------------[ ETC ]")]
     public GameManager gameManager;         // gameManager 참조
     public ButtonManager buttonManager;     // ButtonManager 참조
@@ -18,19 +15,9 @@ public class SelectModeManager : MonoBehaviour
     [Header("--------------[ Camera ]")]
     private Camera mainCamera;              // 메인 카메라 참조
 
-    public enum SelectMode
-    {
-        Drag,
-        Click
-    }
-    private SelectMode currentDragMode = SelectMode.Drag;
-
-    private const string SELECT_MODE_KEY = "SelectMode";        // PlayerPrefs 키값
-
     private void Awake()
     {
         mainCamera = Camera.main;
-        LoadSavedMode();
     }
 
     private void Update()
@@ -48,93 +35,20 @@ public class SelectModeManager : MonoBehaviour
         }
     }
 
-    // 저장된 모드 불러오기
-    private void LoadSavedMode()
-    {
-        int savedMode = PlayerPrefs.GetInt(SELECT_MODE_KEY, 0);
-        currentDragMode = savedMode == 0 ? SelectMode.Drag : SelectMode.Click;
-    }
-
-    // 선택 모드 설정 및 상태 초기화
-    public void SetSelectMode(SelectMode mode)
-    {
-        currentDragMode = mode;
-        isDrag = false;
-        isSelected = false;
-        gameManager.ClearSelectedApples();
-        gameManager.ClearLastSelectedApples();
-
-        // 모드 변경 시 PlayerPrefs에 저장
-        PlayerPrefs.SetInt(SELECT_MODE_KEY, mode == SelectMode.Drag ? 0 : 1);
-        PlayerPrefs.Save();
-    }
-
-    // 입력을 처리하여 모드에 따라 동작 수행
+    // 입력을 처리하여 드래그 동작 수행
     private void HandleInput()
     {
         if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
         {
             Vector2 touchPos = Input.mousePosition;
 
-            switch (currentDragMode)
-            {
-                case SelectMode.Drag:
-                    StartDrag(touchPos);
-                    break;
-
-                case SelectMode.Click:
-                    HandleAppleClickDrag(touchPos);
-                    break;
-            }
+            StartDrag(touchPos);
         }
         else if (Input.GetMouseButtonUp(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended))
         {
             if (isDrag)
             {
                 EndDrag();
-            }
-        }
-    }
-
-    // 클릭 모드에서 사과를 선택하고 범위를 계산
-    private void HandleAppleClickDrag(Vector2 clickPos)
-    {
-        GameObject clickedApple = GetAppleAtPosition(ConvertToScreenPosition(clickPos));
-
-        if (clickedApple != null)
-        {
-            if (!isSelected)
-            {
-                // 첫 번째 사과 선택
-                isSelected = true;
-                firstClickPos = ConvertToScreenPosition(clickPos);
-                gameManager.ClearSelectedApples();
-                gameManager.ClearLastSelectedApples();
-                AddClickedApple(clickedApple);
-            }
-            else
-            {
-                // 두 클릭을 기준으로 사각형 영역내에 사과 상태 변경 
-                Vector2 secondClickPos = ConvertToScreenPosition(clickPos);
-
-                rectMinPos = Vector2.Min(firstClickPos, secondClickPos);
-                rectMaxPos = Vector2.Max(firstClickPos, secondClickPos);
-
-                SelectApplesInDrag(rectMinPos, rectMaxPos);
-
-                // 선택된 모든 사과를 lastSelectedApples에 추가
-                foreach (GameObject apple in gameManager.selectedApples)
-                {
-                    if (!gameManager.lastSelectedApples.Contains(apple))
-                    {
-                        gameManager.lastSelectedApples.Add(apple);
-                    }
-                }
-
-                gameManager.CalculateApples();
-                gameManager.ChangeSelectedApplesNumberColor(Color.green);
-
-                isSelected = false;
             }
         }
     }
@@ -147,7 +61,7 @@ public class SelectModeManager : MonoBehaviour
         foreach (GameObject apple in gameManager.appleObjects)
         {
             Apple appleComponent = apple.GetComponent<Apple>();
-            if (appleComponent == null || appleComponent.appleNum == 0)
+            if (appleComponent == null || appleComponent.appleNum == 0 || appleComponent.isDropping)
             {
                 continue;
             }
@@ -209,7 +123,7 @@ public class SelectModeManager : MonoBehaviour
         foreach (GameObject apple in gameManager.appleObjects)
         {
             Apple appleComponent = apple.GetComponent<Apple>();
-            if (appleComponent == null || appleComponent.appleNum == 0)
+            if (appleComponent == null || appleComponent.appleNum == 0 || appleComponent.isDropping)
             {
                 continue;
             }
@@ -269,16 +183,10 @@ public class SelectModeManager : MonoBehaviour
         return position;
     }
 
-    // 현재 선택 모드를 반환하는 함수 추가
-    public SelectMode GetCurrentMode()
-    {
-        return currentDragMode;
-    }
-
-    // 드래그 모드에서 선택 영역을 GUI로 표시
+    // 드래그 선택 영역을 GUI로 표시
     private void OnGUI()
     {
-        if (!isDrag || currentDragMode != SelectMode.Drag)
+        if (!isDrag)
         {
             return;
         }

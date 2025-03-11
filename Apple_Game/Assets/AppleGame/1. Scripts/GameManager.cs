@@ -200,7 +200,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateScore()
     {
-        scoreText.text = score.ToString();
+        scoreText.text = "점수: " + score.ToString();
     }
 
     private void UpdateTimeUI()
@@ -214,7 +214,7 @@ public class GameManager : MonoBehaviour
         selectMode.EndDrag();
         ClearLastSelectedApples();
 
-        endScoreText.text = "Score: " + scoreText.text;
+        endScoreText.text = "점수: " + scoreText.text;
 
         Vector2 startPosition = new Vector2(appleImageRect.anchoredPosition.x, 1050);
         appleImageRect.anchoredPosition = startPosition;
