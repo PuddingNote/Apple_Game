@@ -5,22 +5,20 @@ using System.Collections;
 
 public class Apple : MonoBehaviour
 {
-    [HideInInspector] public int appleNum;                  // 사과 보유번호
-    [HideInInspector] public TextMeshProUGUI childText;     // 사과 보유번호 UI
-    [HideInInspector] public bool isDropping;               // 사과가 떨어지고 있는지 여부
-    private Image appleImage;                               // 사과 이미지
-    private Color originalColor;                            // 사과 이미지의 기존 색상
-    private Color originalNumberColor;                      // 사과 보유번호의 기존 색상
+    [HideInInspector] public int appleNum;                      // 사과 보유번호
+    [HideInInspector] public TextMeshProUGUI childText;         // 사과 보유번호 Text
+    [HideInInspector] public bool isDropping;                   // 사과가 떨어지고 있는지 여부
+
+    private Image appleImage;                                   // 사과 이미지
+    private Color originalColor;                                // 사과 이미지의 기존 색상
+    private Color originalNumberColor;                          // 사과 보유번호의 기존 색상
+
+    private RectTransform rectTransform;
+    private static readonly WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
 
     private void Awake()
     {
-        InitializeApple();
-    }
-
-    private void InitializeApple()
-    {
-        appleNum = Random.Range(1, 10);
-        isDropping = false;
+        rectTransform = GetComponent<RectTransform>();
         appleImage = GetComponent<Image>();
         childText = transform.Find("AppleNumber").GetComponent<TextMeshProUGUI>();
 
@@ -28,28 +26,52 @@ public class Apple : MonoBehaviour
         {
             originalColor = appleImage.color;
         }
-
         if (childText != null)
         {
             originalNumberColor = childText.color;
+        }
+
+        InitializeApple();
+    }
+
+    // 초기화
+    private void InitializeApple()
+    {
+        //appleNum = Random.Range(1, 10);
+        float randomValue = Random.Range(0f, 100f);
+        appleNum = randomValue <= 70f ? Random.Range(1, 8) : Random.Range(8, 10);
+
+        isDropping = false;
+
+        if (childText != null)
+        {
             childText.text = appleNum.ToString();
         }
     }
 
+    // 합이 10인 사과들 드롭
     public void DropApple()
     {
-        isDropping = true;
-        Vector2 startPosition = GetComponent<RectTransform>().position;
-        startPosition.y += 0.55f;
-
-        float randomX = Random.Range(-1f, 1f);
-        StartCoroutine(DropAppleCoroutine(startPosition, randomX, 1f, 0.5f, 3.0f));
+        if (!isDropping)
+        {
+            isDropping = true;
+            Vector2 startPosition = rectTransform.position;
+            startPosition.y += 0.55f;
+            float randomX = Random.Range(-1f, 1f);
+            StartCoroutine(DropAppleCoroutine(startPosition, randomX));
+        }
     }
 
-    private IEnumerator DropAppleCoroutine(Vector2 startPosition, float randomX, float jumpHeight, float speed, float duration)
+    // 사과 드롭 코루틴
+    private IEnumerator DropAppleCoroutine(Vector2 startPosition, float randomX)
     {
+        const float duration = 3f;
+        const float speed = 0.5f;
+        const float jumpHeight = 1f;
+
         float elapsedTime = 0f;
         float xMovement = 0f;
+        Vector2 newPosition = startPosition;
 
         while (elapsedTime < duration)
         {
@@ -57,52 +79,52 @@ public class Apple : MonoBehaviour
             xMovement += randomX * Time.deltaTime * 2;
 
             float t = elapsedTime / speed;
-            float x = startPosition.x + xMovement;
-            float y = Mathf.Lerp(startPosition.y, startPosition.y + jumpHeight, t) - Mathf.Pow(t - 0.5f, 2) * jumpHeight * 4;
+            newPosition.x = startPosition.x + xMovement;
+            newPosition.y = Mathf.Lerp(startPosition.y, startPosition.y + jumpHeight, t) -
+                          (t - 0.5f) * (t - 0.5f) * jumpHeight * 4;
 
-            transform.position = new Vector2(x, y);
-            yield return null;
+            rectTransform.position = newPosition;
+            yield return waitForEndOfFrame;
         }
 
         HideApple();
     }
 
+    // 드롭된 사과 숨기는 함수
     public void HideApple()
     {
         if (appleImage != null)
         {
-            Color color = appleImage.color;
+            var color = appleImage.color;
             color.a = 0f;
             appleImage.color = color;
         }
 
-        foreach (Transform child in transform)
+        var childCount = transform.childCount;
+        for (int i = 0; i < childCount; i++)
         {
-            child.gameObject.SetActive(false);
+            transform.GetChild(i).gameObject.SetActive(false);
         }
 
         isDropping = false;
         appleNum = 0;
     }
 
+    // 사과 보여주는 함수
     public void ShowApple()
     {
-        if (appleNum == 0)
-        {
-            return;
-        }
-
-        if (appleImage != null)
+        if (appleNum != 0 && appleImage != null)
         {
             appleImage.color = originalColor;
-        }
-
-        foreach (Transform child in transform)
-        {
-            child.gameObject.SetActive(true);
+            var childCount = transform.childCount;
+            for (int i = 0; i < childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(true);
+            }
         }
     }
 
+    // 사과 숫자 색 변경 함수
     public void ChangeNumberColor(Color color)
     {
         if (childText != null)
@@ -111,6 +133,7 @@ public class Apple : MonoBehaviour
         }
     }
 
+    // 사과 숫자 색 복원 함수
     public void ResetNumberColor()
     {
         if (childText != null)
