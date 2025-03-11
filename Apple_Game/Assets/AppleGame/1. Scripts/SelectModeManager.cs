@@ -3,21 +3,28 @@ using System.Collections.Generic;
 
 public class SelectModeManager : MonoBehaviour
 {
-    private Vector2 dragStartPos;           // 드래그 시작 위치
-    private Vector2 rectMinPos;             // 선택 영역 최소 좌표
-    private Vector2 rectMaxPos;             // 선택 영역 최대 좌표
-    private bool isDrag;                    // 드래그 상태 여부
+    private Vector2 dragStartPos;               // 드래그 시작 위치
+    private Vector2 rectMinPos;                 // 선택 영역 최소 좌표
+    private Vector2 rectMaxPos;                 // 선택 영역 최대 좌표
+    private bool isDrag;                        // 드래그 상태 여부
+
+    private Vector2 currentMousePos;            // 현재 마우스(터치) 위치
+    private List<GameObject> currentlySelected; // 현재 선택된 사과 목록
+    private List<GameObject> applesToDeselect;  // 선택 해제할 사과 목록
 
     [Header("--------------[ ETC ]")]
-    public GameManager gameManager;         // gameManager 참조
-    public ButtonManager buttonManager;     // ButtonManager 참조
+    public GameManager gameManager;             // gameManager 참조
+    public ButtonManager buttonManager;         // ButtonManager 참조
 
     [Header("--------------[ Camera ]")]
-    private Camera mainCamera;              // 메인 카메라 참조
+    private Camera mainCamera;                  // 메인 카메라 참조
 
     private void Awake()
     {
         mainCamera = Camera.main;
+
+        currentlySelected = new List<GameObject>();
+        applesToDeselect = new List<GameObject>();
     }
 
     private void Update()
@@ -35,14 +42,12 @@ public class SelectModeManager : MonoBehaviour
         }
     }
 
-    // 입력을 처리하여 드래그 동작 수행
+    // 입력을 처리하여 드래그 동작을 수행하는 함수
     private void HandleInput()
     {
         if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
         {
-            Vector2 touchPos = Input.mousePosition;
-
-            StartDrag(touchPos);
+            StartDrag(Input.mousePosition);
         }
         else if (Input.GetMouseButtonUp(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended))
         {
@@ -53,10 +58,18 @@ public class SelectModeManager : MonoBehaviour
         }
     }
 
-    // 드래그 영역 내의 사과들을 선택
+    // 드래그 영역 내의 사과들을 선택하는 함수
     public void SelectApplesInDrag(Vector2 rectMinPos, Vector2 rectMaxPos)
     {
-        List<GameObject> currentlySelected = new List<GameObject>();
+        currentlySelected.Clear();
+        applesToDeselect.Clear();
+
+        Rect dragRect = new Rect(
+            rectMinPos.x,
+            rectMinPos.y,
+            rectMaxPos.x - rectMinPos.x,
+            rectMaxPos.y - rectMinPos.y
+        );
 
         foreach (GameObject apple in gameManager.appleObjects)
         {
@@ -82,14 +95,6 @@ public class SelectModeManager : MonoBehaviour
                 halfHeight * 2
             );
 
-            // 드래그 영역과 사과 영역이 겹치는지 확인
-            Rect dragRect = new Rect(
-                rectMinPos.x,
-                rectMinPos.y,
-                rectMaxPos.x - rectMinPos.x,
-                rectMaxPos.y - rectMinPos.y
-            );
-
             if (dragRect.Overlaps(appleRect))
             {
                 currentlySelected.Add(apple);
@@ -101,7 +106,6 @@ public class SelectModeManager : MonoBehaviour
         }
 
         // 선택 해제된 사과들 처리
-        List<GameObject> applesToDeselect = new List<GameObject>();
         foreach (GameObject apple in gameManager.selectedApples)
         {
             if (!currentlySelected.Contains(apple))
@@ -109,66 +113,32 @@ public class SelectModeManager : MonoBehaviour
                 applesToDeselect.Add(apple);
             }
         }
+
         foreach (GameObject apple in applesToDeselect)
         {
             gameManager.selectedApples.Remove(apple);
-            Apple appleComponent = apple.GetComponent<Apple>();
-            appleComponent.ShowApple();
+            apple.GetComponent<Apple>().ShowApple();
         }
     }
 
-    // 주어진 화면 좌표에 위치한 사과 객체를 반환
-    public GameObject GetAppleAtPosition(Vector2 screenPos)
-    {
-        foreach (GameObject apple in gameManager.appleObjects)
-        {
-            Apple appleComponent = apple.GetComponent<Apple>();
-            if (appleComponent == null || appleComponent.appleNum == 0 || appleComponent.isDropping)
-            {
-                continue;
-            }
-
-            RectTransform rectTransform = apple.GetComponent<RectTransform>();
-            Vector3 appleScreenPos = mainCamera.WorldToScreenPoint(apple.transform.position);
-            appleScreenPos.y = Screen.height - appleScreenPos.y;
-
-            float halfWidth = rectTransform.rect.width * 0.5f;
-            float halfHeight = rectTransform.rect.height * 0.5f;
-
-            if (screenPos.x >= appleScreenPos.x - halfWidth &&
-                screenPos.x <= appleScreenPos.x + halfWidth &&
-                screenPos.y >= appleScreenPos.y - halfHeight &&
-                screenPos.y <= appleScreenPos.y + halfHeight)
-            {
-                return apple;
-            }
-        }
-        return null;
-    }
-
-    // 클릭한 사과 추가
-    public void AddClickedApple(GameObject apple)
-    {
-        gameManager.selectedApples.Add(apple);
-        gameManager.lastSelectedApples.Add(apple);
-        apple.GetComponent<Apple>().ChangeNumberColor(Color.green);
-    }
-
+    // 드래그 시작 함수
     private void StartDrag(Vector2 startPosition)
     {
         isDrag = true;
         dragStartPos = ConvertToScreenPosition(startPosition);
     }
 
+    // 드래그 종료 함수
     public void EndDrag()
     {
         isDrag = false;
         gameManager.CalculateApples();
     }
 
+    // 드래그 업데이트 함수
     private void UpdateDrag()
     {
-        Vector2 currentMousePos = ConvertToScreenPosition(Input.mousePosition);
+        currentMousePos = ConvertToScreenPosition(Input.mousePosition);
         rectMinPos = Vector2.Min(currentMousePos, dragStartPos);
         rectMaxPos = Vector2.Max(currentMousePos, dragStartPos);
 
@@ -176,14 +146,14 @@ public class SelectModeManager : MonoBehaviour
         gameManager.ChangeSelectedApplesNumberColor(Color.green);
     }
 
-    // 화면 좌표를 변환하여 반환
+    // 화면 좌표를 변환하여 반환하는 함수
     private Vector2 ConvertToScreenPosition(Vector2 position)
     {
         position.y = Screen.height - position.y;
         return position;
     }
 
-    // 드래그 선택 영역을 GUI로 표시
+    // 드래그 선택 영역을 GUI로 표시하는 함수
     private void OnGUI()
     {
         if (!isDrag)
