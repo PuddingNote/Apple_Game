@@ -7,6 +7,7 @@ public class Apple : MonoBehaviour
 {
     [HideInInspector] public int appleNum;                  // 사과 보유번호
     [HideInInspector] public TextMeshProUGUI childText;     // 사과 보유번호 UI
+    [HideInInspector] public bool isDropping;               // 사과가 떨어지고 있는지 여부
     private Image appleImage;                               // 사과 이미지
     private Color originalColor;                            // 사과 이미지의 기존 색상
     private Color originalNumberColor;                      // 사과 보유번호의 기존 색상
@@ -19,6 +20,7 @@ public class Apple : MonoBehaviour
     private void InitializeApple()
     {
         appleNum = Random.Range(1, 10);
+        isDropping = false;
         appleImage = GetComponent<Image>();
         childText = transform.Find("AppleNumber").GetComponent<TextMeshProUGUI>();
 
@@ -36,6 +38,7 @@ public class Apple : MonoBehaviour
 
     public void DropApple()
     {
+        isDropping = true;
         Vector2 startPosition = GetComponent<RectTransform>().position;
         startPosition.y += 0.55f;
 
@@ -78,6 +81,7 @@ public class Apple : MonoBehaviour
             child.gameObject.SetActive(false);
         }
 
+        isDropping = false;
         appleNum = 0;
     }
 
