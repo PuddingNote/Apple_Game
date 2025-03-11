@@ -4,16 +4,7 @@ using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour
 {
-    [Header("Drag Mode Buttons")]
-    public GameObject dragButton;           // 드래그 버튼
-    public GameObject clickButton;          // 클릭 버튼
-    private Image dragButtonImage;          // 드래그 버튼 이미지
-    private Image clickButtonImage;         // 클릭 버튼 이미지
-    private Color selectedButtonColor = new Color(0f / 255f, 200f / 255f, 0f / 255f, 255f / 255f);
-    private Color unselectedButtonColor = new Color(0f / 255f, 0f / 255f, 0f / 255f, 150f / 255f);
-
     [Header("--------------[ ETC ]")]
-    public SelectModeManager selectMode;    // SelectModeManager 참조
     private Canvas mainCanvas;              // Canvas 참조
     private GameObject escPanel;            // 일시정지 패널
 
@@ -22,14 +13,6 @@ public class ButtonManager : MonoBehaviour
         mainCanvas = FindObjectOfType<Canvas>();
 
         InitializePausePanel();
-    }
-
-    private void Start()
-    {
-        if (SceneManager.GetActiveScene().name != "TitleScene")
-        {
-            InitializeModeButtons();
-        }
     }
 
     private void Update()
@@ -42,47 +25,28 @@ public class ButtonManager : MonoBehaviour
     {
         escPanel = mainCanvas.transform.Find("Pause Panel").gameObject;
 
-        Button backButton = escPanel.transform.Find("BackGround/Back Button").GetComponent<Button>();
-        backButton.onClick.AddListener(() => escPanel.SetActive(false));
+        Transform backButtonTransform = escPanel.transform.Find("BackGround/Back Button");
+        if (backButtonTransform != null)
+        {
+            Button backButton = backButtonTransform.GetComponent<Button>();
+            backButton.onClick.AddListener(() => escPanel.SetActive(false));
+        }
 
-        Button titleButton = escPanel.transform.Find("BackGround/Title Button").GetComponent<Button>();
-        titleButton.onClick.AddListener(() => GoTitle());
+        Transform titleButtonTransform = escPanel.transform.Find("BackGround/Title Button");
+        if (titleButtonTransform != null)
+        {
+            Button titleButton = titleButtonTransform.GetComponent<Button>();
+            titleButton.onClick.AddListener(() => GoTitle());
+        }
+
+        Transform quitButtonTransform = escPanel.transform.Find("BackGround/Quit Button");
+        if (quitButtonTransform != null)
+        {
+            Button quitButton = quitButtonTransform.GetComponent<Button>();
+            quitButton.onClick.AddListener(() => QuitGame());
+        }
 
         escPanel.SetActive(false);
-    }
-
-    // 게임 모드 버튼 초기화 (드래그 or 클릭)
-    private void InitializeModeButtons()
-    {
-        dragButtonImage = dragButton.GetComponent<Image>();
-        clickButtonImage = clickButton.GetComponent<Image>();
-
-        dragButton.GetComponent<Button>().onClick.AddListener(SetDragMode);
-        clickButton.GetComponent<Button>().onClick.AddListener(SetClickMode);
-
-        // SelectModeManager의 현재 모드에 따라 버튼 UI 상태 업데이트
-        UpdateSelectModeButtonUI(selectMode.GetCurrentMode() == SelectModeManager.SelectMode.Drag);
-    }
-
-    // 드래그 모드 설정
-    public void SetDragMode()
-    {
-        selectMode.SetSelectMode(SelectModeManager.SelectMode.Drag);
-        UpdateSelectModeButtonUI(true);
-    }
-
-    // 클릭 모드 설정
-    public void SetClickMode()
-    {
-        selectMode.SetSelectMode(SelectModeManager.SelectMode.Click);
-        UpdateSelectModeButtonUI(false);
-    }
-
-    // 게임 모드 버튼 시각적 업데이트
-    private void UpdateSelectModeButtonUI(bool isNormalMode)
-    {
-        dragButtonImage.color = isNormalMode ? selectedButtonColor : unselectedButtonColor;
-        clickButtonImage.color = isNormalMode ? unselectedButtonColor : selectedButtonColor;
     }
 
     // ESC(뒤로가기) 입력 처리

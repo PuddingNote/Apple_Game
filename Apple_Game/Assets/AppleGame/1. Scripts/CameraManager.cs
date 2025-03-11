@@ -4,16 +4,15 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
     private const float TARGET_ASPECT = 16f / 9f;
-    private Camera mainCamera;
 
     private void Awake()
     {
-        mainCamera = GetComponent<Camera>();
         InitializeCameraSystem();
     }
 
     private void InitializeCameraSystem()
     {
+        Camera mainCamera = GetComponent<Camera>();
         float currentAspect = (float)Screen.width / Screen.height;
         float scaleHeight = currentAspect / TARGET_ASPECT;
 
