@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
 {
     [Header("--------------[ Game Control ]")]
     private int score = 0;                          // 현재 게임 점수
+    private int highScore = 0;                      // 최고 점수
     private int appleScore = 10;                    // 기본 사과 점수
     [HideInInspector] public bool isGameOver;       // 게임 종료 상태 여부
 
@@ -64,6 +65,7 @@ public class GameManager : MonoBehaviour
     private void InitializeGame()
     {
         mainCamera = Camera.main;
+        highScore = PlayerPrefs.GetInt("HighScore", 0);
 
         endGroup.SetActive(false);
 
@@ -196,6 +198,13 @@ public class GameManager : MonoBehaviour
             additionalScore = (lastSelectedApples.Count - (targetCount - 1)) * 5;
         }
         score += (lastSelectedApples.Count * appleScore) + additionalScore;
+
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetInt("HighScore", highScore);
+            PlayerPrefs.Save();
+        }
     }
 
     private void UpdateScore()
@@ -214,8 +223,7 @@ public class GameManager : MonoBehaviour
         selectMode.EndDrag();
         ClearLastSelectedApples();
 
-        endScoreText.text = "점수: " + scoreText.text;
-
+        endScoreText.text = "최고점수: " + highScore.ToString() + "\n점수: " + score.ToString();
         Vector2 startPosition = new Vector2(appleImageRect.anchoredPosition.x, 1050);
         appleImageRect.anchoredPosition = startPosition;
 
