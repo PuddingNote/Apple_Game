@@ -111,6 +111,8 @@ public class GameManager : MonoBehaviour
     // 선택된 사과들의 합 계산 함수
     public void CalculateApples()
     {
+        if (selectedApples.Count == 0) return;
+
         int totalAppleNum = 0;
 
         int count = selectedApples.Count;
@@ -124,11 +126,26 @@ public class GameManager : MonoBehaviour
 
         if (totalAppleNum == 10)
         {
+            // 점수 계산을 위해 lastSelectedApples 동기화
+            lastSelectedApples.Clear();
+            for (int i = 0; i < selectedApples.Count; i++)
+            {
+                lastSelectedApples.Add(selectedApples[i]);
+            }
+
+            AddScore();
             SpawnEffectsOnSelectedApples();
             DropSelectedApples();
-            AddScore();
             UpdateScore();
+
+            selectedApples.Clear();
         }
+        else
+        {
+            // 선택 초기화
+            ClearSelectedApples();
+        }
+        
     }
 
     // 선택된 사과의 위치에 이펙트 생성 함수
@@ -215,20 +232,36 @@ public class GameManager : MonoBehaviour
     // 점수 추가 함수
     private void AddScore()
     {
-        int additionalScore = 0;
         int count = lastSelectedApples.Count;
+        if (count == 0) return;
 
+        int baseScore = count * appleScore;
+
+        // 보너스 점수 계산 (3개 이상 선택 시)
+        int bonusScore = 0;
         if (count >= TARGET_COUNT)
         {
-            additionalScore = (count - (TARGET_COUNT - 1)) * 5;
+            bonusScore = (count - (TARGET_COUNT - 1)) * 5;
         }
-        score += (count * appleScore) + additionalScore;
+
+        score += baseScore + bonusScore;
+
+        // 최고 점수 갱신 확인 및 저장
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetInt("HighScore", highScore);
+            PlayerPrefs.Save();
+        }
     }
 
     // 점수 업데이트 함수
     private void UpdateScore()
     {
-        scoreText.text = $"점수: {score}";
+        if (scoreText != null)
+        {
+            scoreText.text = $"점수: {score}";
+        }
     }
 
     // 시간 업데이트 함수
@@ -241,14 +274,6 @@ public class GameManager : MonoBehaviour
     // 게임오버 함수
     private void GameOver()
     {
-        // 최고점수 계산
-        if (score > highScore)
-        {
-            highScore = score;
-            PlayerPrefs.SetInt("HighScore", highScore);
-            PlayerPrefs.Save();
-        }
-
         selectMode.EndDrag();
         ClearLastSelectedApples();
 
