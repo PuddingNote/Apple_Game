@@ -145,7 +145,7 @@ public class GameManager : MonoBehaviour
             // 선택 초기화
             ClearSelectedApples();
         }
-        
+
     }
 
     // 선택된 사과의 위치에 이펙트 생성 함수

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
@@ -20,11 +21,15 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
+        // 싱글톤 패턴 구현
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
             InitializeAudio();
+
+            // 씬 변경 이벤트 리스너 등록
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
@@ -32,10 +37,50 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        // 이벤트 리스너 해제
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     private void Start()
     {
-        buttonManager = FindObjectOfType<ButtonManager>();
+        FindButtonManager();
         PlayBGM();
+    }
+
+    // 씬 로드 완료 시 호출되는 이벤트 핸들러
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 씬 변경 시 ButtonManager 참조 갱신
+        FindButtonManager();
+    }
+
+    // ButtonManager 찾기
+    private void FindButtonManager()
+    {
+        buttonManager = FindObjectOfType<ButtonManager>();
+        if (buttonManager != null)
+        {
+            UpdateBGMState();
+            UpdateSFXState();
+        }
+        else
+        {
+            // 한 프레임 후에 다시 시도 (씬 로딩 타이밍 문제 해결)
+            Invoke("RetryFindButtonManager", 0.1f);
+        }
+    }
+
+    // ButtonManager 찾기 재시도
+    private void RetryFindButtonManager()
+    {
+        buttonManager = FindObjectOfType<ButtonManager>();
+        if (buttonManager != null)
+        {
+            UpdateBGMState();
+            UpdateSFXState();
+        }
     }
 
     // 오디오 소스 초기화
@@ -50,7 +95,6 @@ public class SoundManager : MonoBehaviour
 
         // SFX 설정
         sfxSource = gameObject.AddComponent<AudioSource>();
-        //sfxSource.clip = sfxClip;
         sfxSource.loop = false;
         sfxSource.playOnAwake = false;
         sfxSource.volume = sfxVolume;
@@ -75,7 +119,8 @@ public class SoundManager : MonoBehaviour
 
         if (buttonManager == null)
         {
-            buttonManager = FindObjectOfType<ButtonManager>();
+            FindButtonManager();
+            if (buttonManager == null) return;
         }
 
         if (buttonManager.IsSFXOn())

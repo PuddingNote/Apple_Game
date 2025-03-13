@@ -5,17 +5,15 @@ using TMPro;
 
 public class ButtonManager : MonoBehaviour
 {
-    [Header("--------------[ ETC ]")]
+    [Header("--------------[ UI References ]")]
     private Canvas mainCanvas;              // Canvas 참조
-
-    private Button optionButton;            // 옵션 버튼
-
     private GameObject escPanel;            // 일시정지 패널
     private GameObject optionPanel;         // 옵션 패널
     private GameObject helpPanel;           // 도움말 패널
     private GameObject creditPanel;         // 크레딧 패널
 
-    // 사운드
+    [Header("--------------[ Buttons ]")]
+    private Button optionButton;            // 옵션 버튼
     private Button bgmButton;               // BGM 버튼
     private Button sfxButton;               // SFX 버튼
     private Image bgmButtonImage;           // BGM 버튼 이미지
@@ -23,16 +21,15 @@ public class ButtonManager : MonoBehaviour
     private TextMeshProUGUI bgmButtonText;  // BGM 버튼 텍스트
     private TextMeshProUGUI sfxButtonText;  // SFX 버튼 텍스트
 
+    [Header("--------------[ Sound Settings ]")]
     private bool isBgmOn = true;            // BGM 상태
     private bool isSfxOn = true;            // SFX 상태
-
-    private Color onColor = new Color(0f, 200f / 255f, 0f);     // On 상태 색상
-    private Color offColor = new Color(255f / 255f, 0f, 0f);    // Off 상태 색상
+    private Color onColor = new Color(0f, 200f / 255f, 0f); // On 상태 색상
+    private Color offColor = Color.red;                     // Off 상태 색상
 
     private void Awake()
     {
         mainCanvas = FindObjectOfType<Canvas>();
-
         LoadSoundSettings();
     }
 
@@ -59,26 +56,9 @@ public class ButtonManager : MonoBehaviour
     {
         escPanel = mainCanvas.transform.Find("Pause Panel").gameObject;
 
-        Transform backButtonTransform = escPanel.transform.Find("BackGround/Back Button");
-        if (backButtonTransform != null)
-        {
-            Button backButton = backButtonTransform.GetComponent<Button>();
-            backButton.onClick.AddListener(() => escPanel.SetActive(false));
-        }
-
-        Transform titleButtonTransform = escPanel.transform.Find("BackGround/Title Button");
-        if (titleButtonTransform != null)
-        {
-            Button titleButton = titleButtonTransform.GetComponent<Button>();
-            titleButton.onClick.AddListener(() => GoTitle());
-        }
-
-        Transform quitButtonTransform = escPanel.transform.Find("BackGround/Quit Button");
-        if (quitButtonTransform != null)
-        {
-            Button quitButton = quitButtonTransform.GetComponent<Button>();
-            quitButton.onClick.AddListener(() => QuitGame());
-        }
+        SetupButton(escPanel, "BackGround/Back Button", () => escPanel.SetActive(false));
+        SetupButton(escPanel, "BackGround/Title Button", GoTitle);
+        SetupButton(escPanel, "BackGround/Quit Button", QuitGame);
 
         escPanel.SetActive(false);
     }
@@ -112,28 +92,14 @@ public class ButtonManager : MonoBehaviour
             UpdateButtonText(sfxButtonText, isSfxOn);
         }
 
-        // 도움말
-        Transform helpButtonTransform = optionPanel.transform.Find("BackGround/도움말 Button");
-        if (helpButtonTransform != null)
-        {
-            Button helpButton = helpButtonTransform.GetComponent<Button>();
-            helpButton.onClick.AddListener(() => helpPanel.SetActive(true));
-        }
+        // 도움말 버튼
+        SetupButton(optionPanel, "BackGround/도움말 Button", () => helpPanel.SetActive(true));
 
-        // 크레딧
-        Transform creditButtonTransform = optionPanel.transform.Find("BackGround/크레딧 Button");
-        if (creditButtonTransform != null)
-        {
-            Button creditButton = creditButtonTransform.GetComponent<Button>();
-            creditButton.onClick.AddListener(() => creditPanel.SetActive(true));
-        }
+        // 크레딧 버튼
+        SetupButton(optionPanel, "BackGround/크레딧 Button", () => creditPanel.SetActive(true));
 
-        Transform backButtonTransform = optionPanel.transform.Find("BackGround/Back Button");
-        if (backButtonTransform != null)
-        {
-            Button backButton = backButtonTransform.GetComponent<Button>();
-            backButton.onClick.AddListener(() => optionPanel.SetActive(false));
-        }
+        // 뒤로가기 버튼
+        SetupButton(optionPanel, "BackGround/Back Button", () => optionPanel.SetActive(false));
 
         optionPanel.SetActive(false);
     }
@@ -142,7 +108,6 @@ public class ButtonManager : MonoBehaviour
     private void InitializeOptionButton()
     {
         optionButton = mainCanvas.transform.Find("Start Group/Option Button").GetComponent<Button>();
-
         if (optionButton != null)
         {
             optionButton.onClick.AddListener(() => optionPanel.SetActive(true));
@@ -155,12 +120,7 @@ public class ButtonManager : MonoBehaviour
         helpPanel = mainCanvas.transform.Find("Help Panel").gameObject;
         helpPanel.SetActive(false);
 
-        Transform backButtonTransform = helpPanel.transform.Find("BackGround/Back Button");
-        if (backButtonTransform != null)
-        {
-            Button backButton = backButtonTransform.GetComponent<Button>();
-            backButton.onClick.AddListener(() => helpPanel.SetActive(false));
-        }
+        SetupButton(helpPanel, "BackGround/Back Button", () => helpPanel.SetActive(false));
     }
 
     // 크레딧 패널 설정 초기화
@@ -169,11 +129,20 @@ public class ButtonManager : MonoBehaviour
         creditPanel = mainCanvas.transform.Find("Credit Panel").gameObject;
         creditPanel.SetActive(false);
 
-        Transform backButtonTransform = creditPanel.transform.Find("BackGround/Back Button");
-        if (backButtonTransform != null)
+        SetupButton(creditPanel, "BackGround/Back Button", () => creditPanel.SetActive(false));
+    }
+
+    // 버튼 설정 헬퍼 메서드
+    private void SetupButton(GameObject panel, string buttonPath, UnityEngine.Events.UnityAction action)
+    {
+        Transform buttonTransform = panel.transform.Find(buttonPath);
+        if (buttonTransform != null)
         {
-            Button backButton = backButtonTransform.GetComponent<Button>();
-            backButton.onClick.AddListener(() => creditPanel.SetActive(false));
+            Button button = buttonTransform.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(action);
+            }
         }
     }
 
@@ -183,39 +152,48 @@ public class ButtonManager : MonoBehaviour
         bool escapePressed = Input.GetKeyDown(KeyCode.Escape);
         bool androidBackPressed = Application.platform == RuntimePlatform.Android && Input.GetKey(KeyCode.Escape);
 
-        if (SceneManager.GetActiveScene().name == "TitleScene")
+        if (!escapePressed && !androidBackPressed) return;
+
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        if (currentScene == "TitleScene" && !optionPanel.activeSelf && !escPanel.activeSelf)
         {
-            if ((escapePressed || androidBackPressed) && !optionPanel.activeSelf)
-            {
-                if (!escPanel.activeSelf)
-                {
-                    escPanel.SetActive(true);
-                }
-            }
+            escPanel.SetActive(true);
         }
-        else if (SceneManager.GetActiveScene().name == "GameScene")
+        else if (currentScene == "GameScene" && !escPanel.activeSelf)
         {
-            if ((escapePressed || androidBackPressed))
-            {
-                if (!escPanel.activeSelf)
-                {
-                    escPanel.SetActive(true);
-                }
-            }
+            escPanel.SetActive(true);
         }
     }
 
     // ESC(뒤로가기) 패널 활성화 여부 확인
     public bool IsActiveEscPanel()
     {
-        if (escPanel.activeSelf)
-        {
-            return true;
-        }
-        return false;
+        return escPanel.activeSelf;
     }
 
-    #region 사운드
+    // 게임 시작
+    public void StartGame()
+    {
+        SceneManager.LoadScene("GameScene");
+    }
+
+    // 타이틀로 이동
+    public void GoTitle()
+    {
+        SceneManager.LoadScene("TitleScene");
+    }
+
+    // 게임 종료
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
     // BGM 토글
     private void ToggleBGM()
     {
@@ -290,25 +268,4 @@ public class ButtonManager : MonoBehaviour
         isBgmOn = PlayerPrefs.GetInt("BGM", 1) == 1;
         isSfxOn = PlayerPrefs.GetInt("SFX", 1) == 1;
     }
-    #endregion
-
-    public void StartGame()
-    {
-        SceneManager.LoadScene("GameScene");
-    }
-
-    public void GoTitle()
-    {
-        SceneManager.LoadScene("TitleScene");
-    }
-
-    public void QuitGame()
-    {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
-    }
-    
 }
