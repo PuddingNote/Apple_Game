@@ -34,12 +34,11 @@ public class Apple : MonoBehaviour
         InitializeApple();
     }
 
-    // 초기화
+    // 사과 초기화
     private void InitializeApple()
     {
-        //appleNum = Random.Range(1, 10);
         float randomValue = Random.Range(0f, 100f);
-        appleNum = randomValue <= 70f ? Random.Range(1, 8) : Random.Range(8, 10);
+        appleNum = randomValue <= 75f ? Random.Range(1, 8) : Random.Range(8, 10);
 
         isDropping = false;
 
@@ -80,8 +79,7 @@ public class Apple : MonoBehaviour
 
             float t = elapsedTime / speed;
             newPosition.x = startPosition.x + xMovement;
-            newPosition.y = Mathf.Lerp(startPosition.y, startPosition.y + jumpHeight, t) -
-                          (t - 0.5f) * (t - 0.5f) * jumpHeight * 4;
+            newPosition.y = Mathf.Lerp(startPosition.y, startPosition.y + jumpHeight, t) - (t - 0.5f) * (t - 0.5f) * jumpHeight * 4;
 
             rectTransform.position = newPosition;
             yield return waitForEndOfFrame;
