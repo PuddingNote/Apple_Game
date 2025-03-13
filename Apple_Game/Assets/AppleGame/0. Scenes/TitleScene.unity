@@ -392,8 +392,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'BGM : "Vivacity" Kevin MacLeod (incompetech.com)
 
-    Licensed under
-    Creative Commons: By Attribution 4.0 License
+    Licensed under Creative
+    Commons: By Attribution 4.0 License
 
     http://creativecommons.org/licenses/by/4.0/
 
@@ -6905,6 +6905,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1854315427}
   m_CullTransparentMesh: 1
+--- !u!1 &1925258695
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1925258696}
+  - component: {fileID: 1925258697}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1925258696
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925258695}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1925258697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925258695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5556cb48db908ea439a803561b9365e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bgmClip: {fileID: 8300000, guid: 8aa0dd3e4327be1419219c704a52681f, type: 3}
+  sfxClip: {fileID: 8300000, guid: 932ae67eec9c540459dee04fb5d8eb3a, type: 3}
 --- !u!1 &1952280560
 GameObject:
   m_ObjectHideFlags: 0
@@ -7949,6 +7995,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 937479077}
+  - {fileID: 1925258696}
   - {fileID: 1671964303}
   - {fileID: 1220443925}
   - {fileID: 613566773}

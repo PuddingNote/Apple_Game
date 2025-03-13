@@ -246,6 +246,12 @@ public class GameManager : MonoBehaviour
 
         score += baseScore + bonusScore;
 
+        // 매칭 효과음 재생
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX();
+        }
+
         // 최고 점수 갱신 확인 및 저장
         if (score > highScore)
         {
