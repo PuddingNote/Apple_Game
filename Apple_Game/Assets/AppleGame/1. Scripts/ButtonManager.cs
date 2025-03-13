@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
 public class ButtonManager : MonoBehaviour
@@ -31,6 +32,12 @@ public class ButtonManager : MonoBehaviour
     {
         mainCanvas = FindObjectOfType<Canvas>();
         LoadSoundSettings();
+
+        // 모바일 환경에서 프레임 레이트 설정
+        if (Application.isMobilePlatform)
+        {
+            Application.targetFrameRate = 60;
+        }
     }
 
     private void Start()
@@ -39,6 +46,7 @@ public class ButtonManager : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name == "TitleScene")
         {
+            InitializeMainButton();
             InitializeOptionPanel();
             InitializeOptionButton();
             InitializeHelpPanel();
@@ -49,6 +57,26 @@ public class ButtonManager : MonoBehaviour
     private void Update()
     {
         HandleEscInput();
+    }
+
+    // 타이틀씬 메인 버튼 초기화
+    private void InitializeMainButton()
+    {
+        // 게임 시작 버튼 설정
+        Button startButton = mainCanvas.transform.Find("Start Group/Start Button").GetComponent<Button>();
+        if (startButton != null)
+        {
+            startButton.onClick.AddListener(StartGame);
+            AddButtonClickFeedback(startButton);
+        }
+
+        // 게임 종료 버튼 설정
+        Button quitButton = mainCanvas.transform.Find("Start Group/Quit Button").GetComponent<Button>();
+        if (quitButton != null)
+        {
+            quitButton.onClick.AddListener(QuitGame);
+            AddButtonClickFeedback(quitButton);
+        }
     }
 
     // 일시정지 패널 설정 초기화
@@ -78,6 +106,9 @@ public class ButtonManager : MonoBehaviour
             bgmButton.onClick.AddListener(ToggleBGM);
             UpdateButtonColor(bgmButtonImage, isBgmOn);
             UpdateButtonText(bgmButtonText, isBgmOn);
+
+            // 모바일용 버튼 최적화
+            AddButtonClickFeedback(bgmButton);
         }
 
         // SFX On/Off 버튼
@@ -90,6 +121,9 @@ public class ButtonManager : MonoBehaviour
             sfxButton.onClick.AddListener(ToggleSFX);
             UpdateButtonColor(sfxButtonImage, isSfxOn);
             UpdateButtonText(sfxButtonText, isSfxOn);
+
+            // 모바일용 버튼 최적화
+            AddButtonClickFeedback(sfxButton);
         }
 
         // 도움말 버튼
@@ -111,6 +145,9 @@ public class ButtonManager : MonoBehaviour
         if (optionButton != null)
         {
             optionButton.onClick.AddListener(() => optionPanel.SetActive(true));
+
+            // 모바일용 버튼 최적화
+            AddButtonClickFeedback(optionButton);
         }
     }
 
@@ -132,7 +169,7 @@ public class ButtonManager : MonoBehaviour
         SetupButton(creditPanel, "BackGround/Back Button", () => creditPanel.SetActive(false));
     }
 
-    // 버튼 설정 헬퍼 메서드
+    // 버튼 설정 헬퍼 함수
     private void SetupButton(GameObject panel, string buttonPath, UnityEngine.Events.UnityAction action)
     {
         Transform buttonTransform = panel.transform.Find(buttonPath);
@@ -142,8 +179,49 @@ public class ButtonManager : MonoBehaviour
             if (button != null)
             {
                 button.onClick.AddListener(action);
+
+                // 모바일용 버튼 최적화
+                AddButtonClickFeedback(button);
             }
         }
+    }
+
+    // 버튼 클릭 피드백 추가 (모바일 최적화)
+    private void AddButtonClickFeedback(Button button)
+    {
+        if (Application.isMobilePlatform || Application.isEditor)
+        {
+            // 이미 EventTrigger가 있는지 확인
+            EventTrigger trigger = button.gameObject.GetComponent<EventTrigger>();
+            if (trigger == null)
+            {
+                trigger = button.gameObject.AddComponent<EventTrigger>();
+            }
+
+            // 포인터 다운 이벤트 추가
+            EventTrigger.Entry pointerDown = new EventTrigger.Entry();
+            pointerDown.eventID = EventTriggerType.PointerDown;
+            pointerDown.callback.AddListener((data) => { OnButtonDown(button.transform); });
+            trigger.triggers.Add(pointerDown);
+
+            // 포인터 업 이벤트 추가
+            EventTrigger.Entry pointerUp = new EventTrigger.Entry();
+            pointerUp.eventID = EventTriggerType.PointerUp;
+            pointerUp.callback.AddListener((data) => { OnButtonUp(button.transform); });
+            trigger.triggers.Add(pointerUp);
+        }
+    }
+
+    // 버튼 눌림 효과
+    private void OnButtonDown(Transform buttonTransform)
+    {
+        buttonTransform.localScale = new Vector3(0.95f, 0.95f, 1f);
+    }
+
+    // 버튼 뗌 효과
+    private void OnButtonUp(Transform buttonTransform)
+    {
+        buttonTransform.localScale = Vector3.one;
     }
 
     // ESC(뒤로가기) 입력 처리
@@ -268,4 +346,5 @@ public class ButtonManager : MonoBehaviour
         isBgmOn = PlayerPrefs.GetInt("BGM", 1) == 1;
         isSfxOn = PlayerPrefs.GetInt("SFX", 1) == 1;
     }
+
 }
