@@ -6,7 +6,7 @@ public class DragManager : MonoBehaviour
     private Vector2 dragStartPos;               // 드래그 시작 위치
     private Vector2 rectMinPos;                 // 선택 영역 최소 좌표
     private Vector2 rectMaxPos;                 // 선택 영역 최대 좌표
-    private bool isDrag;                        // 드래그 상태 여부
+    [HideInInspector] public bool isDrag;       // 드래그 상태 여부
 
     private Vector2 currentMousePos;            // 현재 마우스(터치) 위치
     private List<GameObject> currentlySelected; // 현재 선택된 사과 목록
@@ -29,6 +29,19 @@ public class DragManager : MonoBehaviour
 
     private void Update()
     {
+        // 카운트다운 중이면 모든 드래그 상태 초기화 및 입력 차단
+        if (gameManager.isCountingDown)
+        {
+            if (isDrag)
+            {
+                isDrag = false;
+                currentlySelected.Clear();
+                applesToDeselect.Clear();
+                gameManager.ClearSelectedApples();
+            }
+            return;
+        }
+
         if (gameManager.isGameOver || buttonManager.IsActiveEscPanel())
         {
             return;
@@ -45,6 +58,9 @@ public class DragManager : MonoBehaviour
     // 입력을 처리하여 드래그 동작을 수행하는 함수
     private void HandleInput()
     {
+        // 카운트다운 중이면 모든 입력 무시
+        if (gameManager.isCountingDown) return;
+
         if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
         {
             StartDrag(Input.mousePosition);

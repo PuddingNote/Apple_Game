@@ -234,6 +234,9 @@ public class ButtonManager : MonoBehaviour
 
         string currentScene = SceneManager.GetActiveScene().name;
 
+        GameObject setNumberPanel = GameObject.Find("SetNumber Panel");
+        if (setNumberPanel != null && setNumberPanel.activeSelf) return;
+
         if (currentScene == "TitleScene" && !optionPanel.activeSelf && !escPanel.activeSelf)
         {
             escPanel.SetActive(true);
