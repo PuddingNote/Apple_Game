@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
     public GameObject effectPrefab;                 // 이펙트 프리팹
 
     [Header("--------------[ ETC ]")]
-    public SelectModeManager selectMode;            // SelectModeManager 참조
+    public DragManager dragManager;                 // DragManager 참조
     private Camera mainCamera;                      // mainCamera 참조
     private readonly WaitForSeconds effectDestroyDelay = new WaitForSeconds(1f);
 
@@ -280,7 +280,7 @@ public class GameManager : MonoBehaviour
     // 게임오버 함수
     private void GameOver()
     {
-        selectMode.EndDrag();
+        dragManager.EndDrag();
         ClearLastSelectedApples();
 
         endScoreText.text = $"최고점수: {highScore}\n점수: {score}";

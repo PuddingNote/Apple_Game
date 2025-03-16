@@ -469,7 +469,7 @@ GameObject:
   - component: {fileID: 227121591}
   - component: {fileID: 227121592}
   m_Layer: 0
-  m_Name: SelectModeManager
+  m_Name: DragManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1789,7 +1789,7 @@ MonoBehaviour:
   timeText: {fileID: 1688410604}
   timeSlider: {fileID: 65353865}
   effectPrefab: {fileID: 7601680431473582802, guid: 9fbda3a1f29e22946adfb836fca865a4, type: 3}
-  selectMode: {fileID: 227121592}
+  dragManager: {fileID: 227121592}
 --- !u!1 &1302941509
 GameObject:
   m_ObjectHideFlags: 0

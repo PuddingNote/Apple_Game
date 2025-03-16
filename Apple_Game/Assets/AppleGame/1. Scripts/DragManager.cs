@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class SelectModeManager : MonoBehaviour
+public class DragManager : MonoBehaviour
 {
     private Vector2 dragStartPos;               // 드래그 시작 위치
     private Vector2 rectMinPos;                 // 선택 영역 최소 좌표
