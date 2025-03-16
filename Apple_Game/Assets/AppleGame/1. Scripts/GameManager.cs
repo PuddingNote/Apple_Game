@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using System.Collections;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
     private int highScore = 0;                      // 최고 점수
     private int appleScore = 10;                    // 기본 사과 점수
     [HideInInspector] public bool isGameOver;       // 게임 종료 상태 여부
+    [HideInInspector] public bool isCountingDown;   // 카운트다운 진행 중 여부
 
     [Header("--------------[ Game Setting ]")]
     public GameObject applePrefab;                  // 사과 Prefab
@@ -31,6 +33,10 @@ public class GameManager : MonoBehaviour
     public RectTransform appleImageRect;            // EndGroup의 Apple Image의 좌표
     public TextMeshProUGUI timeText;                // 남은 시간을 표시할 Text
 
+    public GameObject setNumberPanel;               // Canvas의 SetNumberPanel
+    public TextMeshProUGUI countDownText;           // SetNumberPanel의 카운트다운 Text
+    private int countDown = 3;                      // 카운트다운
+
     [Header("--------------[ Gaugebar ]")]
     public Slider timeSlider;                       // UI에 표시할 게이지바
     private const float TIME_LIMIT = 60f;           // 기본 시간 제한(초)
@@ -40,15 +46,22 @@ public class GameManager : MonoBehaviour
     public GameObject effectPrefab;                 // 이펙트 프리팹
 
     [Header("--------------[ ETC ]")]
-    public SelectModeManager selectMode;            // SelectModeManager 참조
+    public DragManager dragManager;                 // DragManager 참조
     private Camera mainCamera;                      // mainCamera 참조
     private readonly WaitForSeconds effectDestroyDelay = new WaitForSeconds(1f);
+
+    // =======================================================================================================
 
     private void Awake()
     {
         Application.targetFrameRate = 60;
 
         InitializeGame();
+    }
+
+    private void Start()
+    {
+        CalculatePossibleCombinations();
     }
 
     private void Update()
@@ -67,6 +80,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // =======================================================================================================
+
     // 초기화
     private void InitializeGame()
     {
@@ -74,6 +89,7 @@ public class GameManager : MonoBehaviour
         highScore = PlayerPrefs.GetInt("HighScore", 0);
 
         endGroup.SetActive(false);
+        setNumberPanel.SetActive(false);
 
         applePool = new List<Apple>(POOL_SIZE);
         selectedApples = new List<GameObject>(POOL_SIZE);
@@ -135,9 +151,8 @@ public class GameManager : MonoBehaviour
 
             AddScore();
             SpawnEffectsOnSelectedApples();
-            DropSelectedApples();
             UpdateScore();
-
+            StartCoroutine(ProcessMatchedApples(selectedApples));
             selectedApples.Clear();
         }
         else
@@ -145,7 +160,70 @@ public class GameManager : MonoBehaviour
             // 선택 초기화
             ClearSelectedApples();
         }
+    }
 
+    // 매칭된 사과들 처리를 위한 코루틴
+    private IEnumerator ProcessMatchedApples(List<GameObject> matchedApples)
+    {
+        // 사과들을 드롭
+        int count = matchedApples.Count;
+        for (int i = 0; i < count; i++)
+        {
+            if (matchedApples[i].TryGetComponent<Apple>(out Apple appleComponent))
+            {
+                appleComponent.DropApple();
+            }
+        }
+
+        // 드롭 애니메이션이 완료될 때까지 대기 (2초)
+        yield return new WaitForSeconds(2f);
+
+        // 드래그 중일 때의 처리 (예외 처리)
+        if (dragManager.isDrag)
+        {
+            // 현재 드래그 중인 사과들의 정보를 임시 저장
+            List<GameObject> tempSelectedApples = new List<GameObject>(selectedApples);
+
+            // 드래그가 끝날 때까지 대기
+            yield return new WaitUntil(() => !dragManager.isDrag);
+
+            // 저장해둔 사과들의 합이 10인지 확인
+            if (tempSelectedApples.Count > 0)
+            {
+                int sum = 0;
+                for (int i = 0; i < tempSelectedApples.Count; i++)
+                {
+                    if (tempSelectedApples[i].TryGetComponent<Apple>(out Apple appleComponent))
+                    {
+                        sum += appleComponent.appleNum;
+                    }
+                }
+
+                // 합이 10이면 현재 코루틴 종료 (새로운 매치가 발생할 것이므로)
+                if (sum == 10)
+                {
+                    yield break;
+                }
+            }
+        }
+
+        // 해당 드롭 애니메이션 제외 다른 모든 드롭 애니메이션이 완료되었는지 확인 (예외 처리)
+        for (int i = 0; i < applePool.Count; i++)
+        {
+            if (applePool[i].isDropping)
+            {
+                yield break;
+            }
+        }
+
+        // 게임 종료 확인 (예외 처리)
+        if (isGameOver) yield break;
+
+        // 가능한 조합 계산
+        if (CalculatePossibleCombinations() <= 5 && !setNumberPanel.activeSelf)
+        {
+            StartCoroutine(StartCountdownAndRandomize());
+        }
     }
 
     // 선택된 사과의 위치에 이펙트 생성 함수
@@ -170,19 +248,6 @@ public class GameManager : MonoBehaviour
     {
         yield return effectDestroyDelay;
         Destroy(effect);
-    }
-
-    // 선택된 사과를 떨어뜨리는 함수
-    private void DropSelectedApples()
-    {
-        int count = selectedApples.Count;
-        for (int i = 0; i < count; i++)
-        {
-            if (selectedApples[i].TryGetComponent<Apple>(out Apple appleComponent))
-            {
-                appleComponent.DropApple();
-            }
-        }
     }
 
     // 선택된 사과들 초기화
@@ -228,6 +293,8 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    // =======================================================================================================
 
     // 점수 추가 함수
     private void AddScore()
@@ -280,7 +347,7 @@ public class GameManager : MonoBehaviour
     // 게임오버 함수
     private void GameOver()
     {
-        selectMode.EndDrag();
+        dragManager.EndDrag();
         ClearLastSelectedApples();
 
         endScoreText.text = $"최고점수: {highScore}\n점수: {score}";
@@ -292,5 +359,127 @@ public class GameManager : MonoBehaviour
         float targetY = mainCamera.ScreenToWorldPoint(new Vector3(0, Screen.height / 2, 0)).y;
         appleImageRect.DOMoveY(targetY, 1f).SetEase(Ease.OutBounce);
     }
+
+    // =======================================================================================================
+
+    // 가능한 합 10 조합 계산
+    private int CalculatePossibleCombinations()
+    {
+        const int GRID_WIDTH = 15;
+        const int GRID_HEIGHT = 8;
+
+        // 2차원 배열로 사과 그리드 생성
+        int[,] appleGrid = new int[GRID_HEIGHT, GRID_WIDTH];
+
+        // 그리드에 사과 숫자 채우기
+        for (int i = 0; i < POOL_SIZE; i++)
+        {
+            if (appleObjects[i].TryGetComponent<Apple>(out Apple appleComponent))
+            {
+                int row = i / GRID_WIDTH;
+                int col = i % GRID_WIDTH;
+                appleGrid[row, col] = appleComponent.appleNum;
+            }
+        }
+
+        int possibleCombinations = 0;
+
+        // 모든 가능한 직사각형 영역 검사
+        for (int startRow = 0; startRow < GRID_HEIGHT; startRow++)
+        {
+            for (int startCol = 0; startCol < GRID_WIDTH; startCol++)
+            {
+                // 직사각형의 높이와 너비를 변경하며 검사 (최대 4x4 크기까지)
+                for (int height = 1; height <= Mathf.Min(4, GRID_HEIGHT - startRow); height++)
+                {
+                    for (int width = 1; width <= Mathf.Min(4, GRID_WIDTH - startCol); width++)
+                    {
+                        int sum = 0;
+                        int validNumbers = 0;
+                        List<Vector2Int> positions = new List<Vector2Int>();
+                        List<int> numbers = new List<int>();
+
+                        // 현재 직사각형 영역 내의 숫자들 확인
+                        for (int r = startRow; r < startRow + height; r++)
+                        {
+                            for (int c = startCol; c < startCol + width; c++)
+                            {
+                                if (appleGrid[r, c] > 0)
+                                {
+                                    sum += appleGrid[r, c];
+                                    validNumbers++;
+                                    positions.Add(new Vector2Int(r, c));
+                                    numbers.Add(appleGrid[r, c]);
+                                }
+                            }
+                        }
+
+                        // 합이 10이고 2개 이상의 숫자가 사용된 경우
+                        if (sum == 10 && validNumbers >= 2)
+                        {
+                            possibleCombinations++;
+                            string positionStr = string.Join(", ", positions.Select(p => $"({p.x},{p.y})"));
+                            string numberStr = string.Join(" + ", numbers);
+                            //Debug.Log($"조합 {possibleCombinations}: {numberStr} = 10 at positions {positionStr}");
+                        }
+                    }
+                }
+            }
+        }
+
+        //Debug.Log($"조합 가능 개수 : {possibleCombinations}");
+        return possibleCombinations;
+    }
+
+    // 사과 숫자 랜덤 변경
+    private void RandomizeAppleNumbers()
+    {
+        int count = appleObjects.Length;
+        for (int i = 0; i < count; i++)
+        {
+            if (appleObjects[i].TryGetComponent<Apple>(out Apple appleComponent))
+            {
+                // 아직 남아있는 사과에만 숫자 재설정
+                if (appleComponent.appleNum > 0)
+                {
+                    appleComponent.SetRandomNumber();
+                }
+            }
+        }
+    }
+
+    // 카운트다운 코루틴
+    private IEnumerator StartCountdownAndRandomize()
+    {
+        isCountingDown = true;
+        setNumberPanel.SetActive(true);
+
+        // 현재 선택된 사과들 초기화
+        ClearSelectedApples();
+        ClearLastSelectedApples();
+
+        float previousTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+
+        while (countDown > 0)
+        {
+            countDownText.text = countDown.ToString();
+            yield return new WaitForSecondsRealtime(1f);
+            countDown--;
+        }
+
+        setNumberPanel.SetActive(false);
+        countDown = 3;
+        RandomizeAppleNumbers();
+
+        CalculatePossibleCombinations();
+
+        Time.timeScale = previousTimeScale;
+        isCountingDown = false;
+    }
+
+    // =======================================================================================================
+
+
 
 }

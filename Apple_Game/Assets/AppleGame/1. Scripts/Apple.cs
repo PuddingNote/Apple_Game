@@ -37,10 +37,15 @@ public class Apple : MonoBehaviour
     // 사과 초기화
     private void InitializeApple()
     {
+        SetRandomNumber();
+        isDropping = false;
+    }
+
+    // 랜덤 숫자 생성
+    public void SetRandomNumber()
+    {
         float randomValue = Random.Range(0f, 100f);
         appleNum = randomValue <= 75f ? Random.Range(1, 8) : Random.Range(8, 10);
-
-        isDropping = false;
 
         if (childText != null)
         {
@@ -64,7 +69,7 @@ public class Apple : MonoBehaviour
     // 사과 드롭 코루틴
     private IEnumerator DropAppleCoroutine(Vector2 startPosition, float randomX)
     {
-        const float duration = 3f;
+        const float duration = 2f;
         const float speed = 0.5f;
         const float jumpHeight = 1f;
 
