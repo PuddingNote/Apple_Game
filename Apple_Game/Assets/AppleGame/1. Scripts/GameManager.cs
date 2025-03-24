@@ -359,7 +359,7 @@ public class GameManager : MonoBehaviour
     {
         if (destroyedAppleCountText != null)
         {
-            destroyedAppleCountText.text = $"터뜨린 사과: {destroyedApples}";
+            destroyedAppleCountText.text = $"사과 개수: {destroyedApples}";
         }
     }
 
@@ -377,7 +377,7 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
         }
 
-        endScoreText.text = $"최고 점수: {highScore}\n현재 점수: {score}\n터뜨린 사과: {destroyedApples}";
+        endScoreText.text = $"최고 점수: {highScore}\n현재 점수: {score}\n사과 개수: {destroyedApples}";
         Vector2 startPosition = new Vector2(appleImageRect.anchoredPosition.x, 1050);
         appleImageRect.anchoredPosition = startPosition;
 
@@ -454,7 +454,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //Debug.Log($"조합 가능 개수 : {possibleCombinations}");
+        Debug.Log($"조합 가능 개수 : {possibleCombinations}");
         return possibleCombinations;
     }
 

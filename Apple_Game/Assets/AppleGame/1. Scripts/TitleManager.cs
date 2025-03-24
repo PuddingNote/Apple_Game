@@ -17,13 +17,13 @@ public class TitleManager : MonoBehaviour
         if (highScoreText != null)
         {
             int highScore = PlayerPrefs.GetInt("HighScore", 0);
-            highScoreText.text = "최고점수: " + highScore.ToString();
+            highScoreText.text = "최고 점수: " + highScore.ToString();
         }
 
         if (highDestroyedAppleCountText != null)
         {
             int highDestroyedAppleCount = PlayerPrefs.GetInt("HighDestroyedAppleCount", 0);
-            highDestroyedAppleCountText.text = "최고 터뜨린 사과: " + highDestroyedAppleCount.ToString();
+            highDestroyedAppleCountText.text = "최고 사과개수: " + highDestroyedAppleCount.ToString();
         }
     }
 
