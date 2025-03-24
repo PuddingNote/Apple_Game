@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/AppleGame/0. Scenes/TitleScene.unity
+    path: Assets/AppleGame/0.Scenes/TitleScene.unity
     guid: 439d944d7f84f0b4abdd95fd9a50b6bd
   - enabled: 1
-    path: Assets/AppleGame/0. Scenes/GameScene.unity
+    path: Assets/AppleGame/0.Scenes/GameScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

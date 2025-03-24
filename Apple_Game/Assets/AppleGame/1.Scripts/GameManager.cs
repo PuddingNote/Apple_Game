@@ -359,7 +359,7 @@ public class GameManager : MonoBehaviour
     {
         if (destroyedAppleCountText != null)
         {
-            destroyedAppleCountText.text = $"사과 개수: {destroyedApples}";
+            destroyedAppleCountText.text = $"사과개수: {destroyedApples}";
         }
     }
 
@@ -454,7 +454,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"조합 가능 개수 : {possibleCombinations}");
+        //Debug.Log($"조합 가능 개수 : {possibleCombinations}");
         return possibleCombinations;
     }
 

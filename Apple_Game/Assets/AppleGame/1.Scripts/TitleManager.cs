@@ -9,6 +9,8 @@ public class TitleManager : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = 60;
+
         InitializeTitleUI();
     }
 
@@ -17,7 +19,7 @@ public class TitleManager : MonoBehaviour
         if (highScoreText != null)
         {
             int highScore = PlayerPrefs.GetInt("HighScore", 0);
-            highScoreText.text = "최고 점수: " + highScore.ToString();
+            highScoreText.text = "최고점수: " + highScore.ToString();
         }
 
         if (highDestroyedAppleCountText != null)
