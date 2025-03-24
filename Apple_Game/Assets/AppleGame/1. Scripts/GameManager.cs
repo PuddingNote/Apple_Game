@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     private int appleScore = 10;                    // 기본 사과 점수
     [HideInInspector] public bool isGameOver;       // 게임 종료 상태 여부
     [HideInInspector] public bool isCountingDown;   // 카운트다운 진행 중 여부
+    private int remainingResets = 2;                // 남은 숫자 재설정 횟수
 
     [Header("--------------[ Game Setting ]")]
     public GameObject applePrefab;                  // 사과 Prefab
@@ -87,6 +88,7 @@ public class GameManager : MonoBehaviour
     {
         mainCamera = Camera.main;
         highScore = PlayerPrefs.GetInt("HighScore", 0);
+        remainingResets = 2;
 
         endGroup.SetActive(false);
         setNumberPanel.SetActive(false);
@@ -220,8 +222,9 @@ public class GameManager : MonoBehaviour
         if (isGameOver) yield break;
 
         // 가능한 조합 계산
-        if (CalculatePossibleCombinations() <= 5 && !setNumberPanel.activeSelf)
+        if (CalculatePossibleCombinations() <= 5 && !setNumberPanel.activeSelf && remainingResets > 0)
         {
+            remainingResets--;
             StartCoroutine(StartCountdownAndRandomize());
         }
     }

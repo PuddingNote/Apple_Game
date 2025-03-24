@@ -441,7 +441,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "\uC870\uD569\uD560 \uC218 \uC788\uB294 \uC0AC\uACFC\uAC00 \uC801\uC2B5\uB2C8\uB2E4.\n\n\uC22B\uC790\uB97C
-    \uC7AC\uC124\uC815 \uD569\uB2C8\uB2E4..."
+    \uC7AC\uC124\uC815 \uD569\uB2C8\uB2E4... (\uCD5C\uB300 2\uBC88)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 05267a07c6f1b334eb6a696e107f6ad1, type: 2}
   m_sharedMaterial: {fileID: 3043641006530773430, guid: 05267a07c6f1b334eb6a696e107f6ad1, type: 2}
@@ -2061,7 +2061,6 @@ MonoBehaviour:
   setNumberPanel: {fileID: 1708491194}
   countDownText: {fileID: 1049847227}
   timeSlider: {fileID: 65353865}
-  effectGroup: {fileID: 170130866}
   effectPrefab: {fileID: 7601680431473582802, guid: 9fbda3a1f29e22946adfb836fca865a4, type: 3}
   dragManager: {fileID: 227121592}
 --- !u!1 &1302941509
