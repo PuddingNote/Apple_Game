@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     private int score = 0;                          // 현재 게임 점수
     private int highScore = 0;                      // 최고 점수
     private int appleScore = 10;                    // 기본 사과 점수
+    private int destroyedApples = 0;                // 터뜨린 사과 개수
     [HideInInspector] public bool isGameOver;       // 게임 종료 상태 여부
     [HideInInspector] public bool isCountingDown;   // 카운트다운 진행 중 여부
     private int remainingResets = 2;                // 남은 숫자 재설정 횟수
@@ -33,6 +34,7 @@ public class GameManager : MonoBehaviour
     public GameObject endGroup;                     // Canvas의 EndGroup
     public RectTransform appleImageRect;            // EndGroup의 Apple Image의 좌표
     public TextMeshProUGUI timeText;                // 남은 시간을 표시할 Text
+    public TextMeshProUGUI destroyedAppleCountText; // 터뜨린 사과의 개수 Text
 
     public GameObject setNumberPanel;               // Canvas의 SetNumberPanel
     public TextMeshProUGUI countDownText;           // SetNumberPanel의 카운트다운 Text
@@ -89,6 +91,8 @@ public class GameManager : MonoBehaviour
         mainCamera = Camera.main;
         highScore = PlayerPrefs.GetInt("HighScore", 0);
         remainingResets = 2;
+        destroyedApples = 0;
+        UpdateAppleCount();
 
         endGroup.SetActive(false);
         setNumberPanel.SetActive(false);
@@ -305,6 +309,9 @@ public class GameManager : MonoBehaviour
         int count = lastSelectedApples.Count;
         if (count == 0) return;
 
+        destroyedApples += count;
+        UpdateAppleCount();
+
         int baseScore = count * appleScore;
 
         // 보너스 점수 계산 (3개 이상 선택 시)
@@ -347,13 +354,30 @@ public class GameManager : MonoBehaviour
         timeText.text = Mathf.CeilToInt(currentTime).ToString();
     }
 
+    // 사과 개수 업데이트 함수
+    private void UpdateAppleCount()
+    {
+        if (destroyedAppleCountText != null)
+        {
+            destroyedAppleCountText.text = $"터뜨린 사과: {destroyedApples}";
+        }
+    }
+
     // 게임오버 함수
     private void GameOver()
     {
         dragManager.EndDrag();
         ClearLastSelectedApples();
 
-        endScoreText.text = $"최고점수: {highScore}\n점수: {score}";
+        // 최고 터뜨린 사과 개수 갱신 및 저장
+        int highDestroyedAppleCount = PlayerPrefs.GetInt("HighDestroyedAppleCount", 0);
+        if (destroyedApples > highDestroyedAppleCount)
+        {
+            PlayerPrefs.SetInt("HighDestroyedAppleCount", destroyedApples);
+            PlayerPrefs.Save();
+        }
+
+        endScoreText.text = $"최고 점수: {highScore}\n현재 점수: {score}\n터뜨린 사과: {destroyedApples}";
         Vector2 startPosition = new Vector2(appleImageRect.anchoredPosition.x, 1050);
         appleImageRect.anchoredPosition = startPosition;
 
