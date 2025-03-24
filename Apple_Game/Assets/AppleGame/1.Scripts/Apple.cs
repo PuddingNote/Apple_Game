@@ -45,7 +45,20 @@ public class Apple : MonoBehaviour
     public void SetRandomNumber()
     {
         float randomValue = Random.Range(0f, 100f);
-        appleNum = randomValue <= 75f ? Random.Range(1, 8) : Random.Range(8, 10);
+        //appleNum = randomValue <= 75f ? Random.Range(1, 8) : Random.Range(8, 10);
+
+        if (randomValue <= 35f)             // 35% È®·ü·Î 1~3
+        {
+            appleNum = Random.Range(1, 4);
+        }
+        else if (randomValue <= 75f)        // 40% È®·ü·Î 4~7
+        {
+            appleNum = Random.Range(4, 8);
+        }
+        else                                // 25% È®·ü·Î 8~9
+        {
+            appleNum = Random.Range(8, 10);
+        }
 
         if (childText != null)
         {
