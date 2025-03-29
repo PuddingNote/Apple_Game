@@ -1,26 +1,59 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using TMPro;
 
 public class Apple : MonoBehaviour
 {
-    [HideInInspector] public int appleNum;                      // 사과 보유번호
-    [HideInInspector] public TextMeshProUGUI childText;         // 사과 보유번호 Text
-    [HideInInspector] public bool isDropping;                   // 사과가 떨어지고 있는지 여부
 
-    private Image appleImage;                                   // 사과 이미지
-    private Color originalColor;                                // 사과 이미지의 기존 색상
-    private Color originalNumberColor;                          // 사과 보유번호의 기존 색상
 
-    private RectTransform rectTransform;
-    private static readonly WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
+    #region Variables
 
-    private void Awake()
+    [Header("--------------[ Apple Setting ]")]
+    [HideInInspector] public int appleNum;                  // 사과가 가지고 있는 숫자 값
+    [HideInInspector] public TextMeshProUGUI childText;     // 사과 숫자를 표시하는 Text
+    [HideInInspector] public bool isDropping;               // 사과가 드랍 여부
+
+    private Image appleImage;                               // 사과 이미지
+    private Color originalColor;                            // 사과 이미지의 초기 색상
+    private Color originalNumberColor;                      // 사과 숫자의 초기 색상
+
+    private RectTransform rectTransform;                    // UI 위치와 크기를 제어하는 RectTransform
+
+    [Header("--------------[ ETC ]")]
+    private int childCount;                                 // 자식 오브젝트 개수를 캐싱하는 변수
+    private Transform[] childTransforms;                    // 자식 오브젝트들의 Transform 컴포넌트 배열
+
+    #endregion
+
+
+    #region Unity Methods
+
+    private void Start()
+    {
+        InitializeUI();
+        InitializeApple();
+    }
+
+    #endregion
+
+
+    #region Initialize
+
+    // UI 초기화 및 원본 색상 저장 함수
+    private void InitializeUI()
     {
         rectTransform = GetComponent<RectTransform>();
         appleImage = GetComponent<Image>();
         childText = transform.Find("AppleNumber").GetComponent<TextMeshProUGUI>();
+
+        // 자식 오브젝트 캐싱
+        childCount = transform.childCount;
+        childTransforms = new Transform[childCount];
+        for (int i = 0; i < childCount; i++)
+        {
+            childTransforms[i] = transform.GetChild(i);
+        }
 
         if (appleImage != null)
         {
@@ -30,22 +63,24 @@ public class Apple : MonoBehaviour
         {
             originalNumberColor = childText.color;
         }
-
-        InitializeApple();
     }
 
-    // 사과 초기화
+    // 사과 초기 설정 함수
     private void InitializeApple()
     {
         SetRandomNumber();
         isDropping = false;
     }
 
+    #endregion
+
+
+    #region Apple Number Management
+
     // 랜덤 숫자 생성
     public void SetRandomNumber()
     {
         float randomValue = Random.Range(0f, 100f);
-        //appleNum = randomValue <= 75f ? Random.Range(1, 8) : Random.Range(8, 10);
 
         if (randomValue <= 35f)             // 35% 확률로 1~3
         {
@@ -66,7 +101,12 @@ public class Apple : MonoBehaviour
         }
     }
 
-    // 합이 10인 사과들 드롭
+    #endregion
+
+
+    #region Apple Movement
+
+    // 합이 10인 사과들 드롭 함수
     public void DropApple()
     {
         if (!isDropping)
@@ -79,7 +119,7 @@ public class Apple : MonoBehaviour
         }
     }
 
-    // 사과 드롭 코루틴
+    // 사과 드롭 포물선 코루틴
     private IEnumerator DropAppleCoroutine(Vector2 startPosition, float randomX)
     {
         const float duration = 2f;
@@ -100,7 +140,7 @@ public class Apple : MonoBehaviour
             newPosition.y = Mathf.Lerp(startPosition.y, startPosition.y + jumpHeight, t) - (t - 0.5f) * (t - 0.5f) * jumpHeight * 4;
 
             rectTransform.position = newPosition;
-            yield return waitForEndOfFrame;
+            yield return new WaitForEndOfFrame();
         }
 
         HideApple();
@@ -116,10 +156,9 @@ public class Apple : MonoBehaviour
             appleImage.color = color;
         }
 
-        var childCount = transform.childCount;
         for (int i = 0; i < childCount; i++)
         {
-            transform.GetChild(i).gameObject.SetActive(false);
+            childTransforms[i].gameObject.SetActive(false);
         }
 
         isDropping = false;
@@ -132,10 +171,10 @@ public class Apple : MonoBehaviour
         if (appleNum != 0 && appleImage != null)
         {
             appleImage.color = originalColor;
-            var childCount = transform.childCount;
+            
             for (int i = 0; i < childCount; i++)
             {
-                transform.GetChild(i).gameObject.SetActive(true);
+                childTransforms[i].gameObject.SetActive(true);
             }
         }
     }
@@ -157,5 +196,8 @@ public class Apple : MonoBehaviour
             childText.color = originalNumberColor;
         }
     }
+
+    #endregion
+
 
 }

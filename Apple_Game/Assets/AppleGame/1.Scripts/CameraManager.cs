@@ -1,16 +1,30 @@
 using UnityEngine;
 
-// 카메라 화면 비율을 16:9으로 고정하는 스크립트
 public class CameraManager : MonoBehaviour
 {
-    private const float TARGET_ASPECT = 16f / 9f;
+
+
+    #region Variables
+
+    private const float TARGET_ASPECT = 16f / 9f;       // 화면비 16:9로 고정
+
+    #endregion
+
+
+    #region Unity Methods
 
     private void Awake()
     {
-        InitializeCameraSystem();
+        InitializeCameraManager();
     }
 
-    private void InitializeCameraSystem()
+    #endregion
+
+
+    #region Initialize
+
+    // CameraManager 초기화 함수
+    private void InitializeCameraManager()
     {
         Camera mainCamera = GetComponent<Camera>();
         float currentAspect = (float)Screen.width / Screen.height;
@@ -32,5 +46,8 @@ public class CameraManager : MonoBehaviour
 
         mainCamera.rect = rect;
     }
+
+    #endregion
+
 
 }
