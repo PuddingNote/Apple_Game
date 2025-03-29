@@ -18,8 +18,8 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip sfxClip;         // SFX Å¬¸³
 
     [Header("--------------[ Sound Settings ]")]
-    private float bgmVolume = 0.2f;                     // BGM º¼·ý Å©±â
-    private float sfxVolume = 0.3f;                     // SFX º¼·ý Å©±â
+    private float bgmVolume = 0.3f;                     // BGM º¼·ý Å©±â
+    private float sfxVolume = 0.5f;                     // SFX º¼·ý Å©±â
 
     [Header("--------------[ ETC ]")]
     private ButtonManager buttonManager;                // buttonManager ÂüÁ¶
