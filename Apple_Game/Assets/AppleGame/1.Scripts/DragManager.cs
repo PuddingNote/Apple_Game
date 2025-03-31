@@ -17,13 +17,12 @@ public class DragManager : MonoBehaviour
     private List<GameObject> currentlySelected;                                         // 현재 드래그 영역 내에 있는 사과 List
     private List<GameObject> applesToDeselect;                                          // 드래그 영역에서 벗어나 선택 해제할 사과 List
     private List<RectTransform> appleRectTransforms = new List<RectTransform>(120);     // 사과 UI 위치/크기 정보 캐싱 List
-    private const float APPLE_BOUNDARY_SCALE = 0.4f;                                    // 사과 선택 판정 영역의 크기 배율
+    private const float APPLE_BOUNDARY_SCALE = 0.3f;                                    // 사과 선택 판정 영역의 크기 배율
 
     [Header("--------------[ UI ]")]
     [SerializeField] private RectTransform selectionBox;    // 드래그 영역 표시용 UI
     private Canvas canvas;                                  // Canvas 참조
     private RectTransform canvasRectTransform;              // Canvas 위치/크기 정보
-    private Vector2 canvasScale;                            // Canvas 스케일 값
 
     [Header("--------------[ Camera ]")]
     private Camera mainCamera;                              // mainCamera 참조
@@ -82,12 +81,6 @@ public class DragManager : MonoBehaviour
         canvas = selectionBox.GetComponentInParent<Canvas>();
         canvasRectTransform = canvas.GetComponent<RectTransform>();
         selectionBox.gameObject.SetActive(false);
-
-        // Canvas 스케일 초기화
-        canvasScale = new Vector2(
-            canvasRectTransform.rect.width / Screen.width,
-            canvasRectTransform.rect.height / Screen.height
-        );
     }
 
     // 사과 리스트 초기화함수
