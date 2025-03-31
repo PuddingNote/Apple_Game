@@ -136,34 +136,46 @@ public class DragManager : MonoBehaviour
 
         selectionBox.gameObject.SetActive(true);
 
-        // 드래그 영역의 크기 계산
-        Vector2 size = new Vector2(
-            Mathf.Abs(rectMaxPos.x - rectMinPos.x),
-            Mathf.Abs(rectMaxPos.y - rectMinPos.y)
-        );
+        // 드래그 영역의 두 코너 좌표 (스크린 좌표계)
+        Vector2 startCorner = dragStartPos;
+        Vector2 endCorner = currentMousePos;
 
-        // 스크린 좌표를 Canvas 좌표로 변환
-        Vector2 screenCenter = new Vector2(
-            (rectMaxPos.x + rectMinPos.x) * 0.5f,
-            (rectMaxPos.y + rectMinPos.y) * 0.5f
-        );
-
-        // Canvas 상의 위치 계산
-        Vector2 canvasPosition;
+        // 캔버스 공간의 좌표로 변환
+        Vector2 startCanvasPos, endCanvasPos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvasRectTransform,
-            screenCenter,
+            startCorner,
             canvas.worldCamera,
-            out canvasPosition
+            out startCanvasPos
         );
 
-        // UI 업데이트
-        canvasPosition = new Vector2(canvasPosition.x, -canvasPosition.y);
-        selectionBox.anchoredPosition = canvasPosition;
-        selectionBox.sizeDelta = new Vector2(
-            size.x * canvasScale.x,
-            size.y * canvasScale.y
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRectTransform,
+            endCorner,
+            canvas.worldCamera,
+            out endCanvasPos
         );
+
+        // 시작점, 끝점 중 최소/최대 지점 계산 (캔버스 좌표계)
+        Vector2 minCanvasPos = new Vector2(
+            Mathf.Min(startCanvasPos.x, endCanvasPos.x),
+            Mathf.Min(startCanvasPos.y, endCanvasPos.y)
+        );
+        Vector2 maxCanvasPos = new Vector2(
+            Mathf.Max(startCanvasPos.x, endCanvasPos.x),
+            Mathf.Max(startCanvasPos.y, endCanvasPos.y)
+        );
+
+        // 박스의 크기와 위치 계산
+        Vector2 size = maxCanvasPos - minCanvasPos;
+        Vector2 position = minCanvasPos + size / 2; // 박스의 중심 위치
+
+        // RectTransform 설정
+        selectionBox.anchorMin = new Vector2(0.5f, 0.5f);
+        selectionBox.anchorMax = new Vector2(0.5f, 0.5f);
+        selectionBox.pivot = new Vector2(0.5f, 0.5f);
+        selectionBox.anchoredPosition = position;
+        selectionBox.sizeDelta = size;
     }
 
     #endregion
@@ -293,7 +305,7 @@ public class DragManager : MonoBehaviour
     {
         currentMousePos = Input.mousePosition;
 
-        // 최소/최대 좌표 계산
+        // 드래그 영역의 최소/최대 좌표 계산
         rectMinPos = new Vector2(
             Mathf.Min(dragStartPos.x, currentMousePos.x),
             Mathf.Min(Screen.height - dragStartPos.y, Screen.height - currentMousePos.y)

@@ -409,7 +409,58 @@ public class GameManager : MonoBehaviour
 
         float targetY = mainCamera.ScreenToWorldPoint(new Vector3(0, Screen.height / 2, 0)).y;
         appleImageRect.DOMoveY(targetY, 1f).SetEase(Ease.OutBounce);
+
+        //StartCoroutine(MoveWithBounceEffect(appleImageRect, targetY, 1f));
     }
+
+    /*
+    // 현재 사용중인 DoTween의 DOMoveY, SetEase와 동일한 효과
+    private IEnumerator MoveWithBounceEffect(RectTransform rectTransform, float targetY, float duration)
+    {
+        Vector2 startPosition = rectTransform.anchoredPosition;
+        float startY = startPosition.y;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float normalizedTime = elapsedTime / duration;
+
+            float yOffset = OutBounceEasing(normalizedTime);
+
+            float currentY = Mathf.Lerp(startY, targetY, yOffset);
+            rectTransform.anchoredPosition = new Vector2(startPosition.x, currentY);
+
+            yield return null;
+        }
+
+        // 애니메이션 종료 시 정확한 위치로 설정
+        rectTransform.anchoredPosition = new Vector2(startPosition.x, targetY);
+    }
+
+    private float OutBounceEasing(float t)
+    {
+        if (t < 1 / 2.75f)
+        {
+            return 7.5625f * t * t;
+        }
+        else if (t < 2 / 2.75f)
+        {
+            t -= 1.5f / 2.75f;
+            return 7.5625f * t * t + 0.75f;
+        }
+        else if (t < 2.5f / 2.75f)
+        {
+            t -= 2.25f / 2.75f;
+            return 7.5625f * t * t + 0.9375f;
+        }
+        else
+        {
+            t -= 2.625f / 2.75f;
+            return 7.5625f * t * t + 0.984375f;
+        }
+    }
+    */
 
     #endregion
 
