@@ -47,7 +47,6 @@ public class Apple : MonoBehaviour
         appleImage = GetComponent<Image>();
         childText = transform.Find("AppleNumber").GetComponent<TextMeshProUGUI>();
 
-        // 자식 오브젝트 캐싱
         childCount = transform.childCount;
         childTransforms = new Transform[childCount];
         for (int i = 0; i < childCount; i++)

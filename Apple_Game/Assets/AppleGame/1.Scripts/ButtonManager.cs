@@ -3,7 +3,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
-using System.Collections;
 using System.Collections.Generic;
 
 public class ButtonManager : MonoBehaviour

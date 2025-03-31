@@ -34,6 +34,9 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public List<GameObject> selectedApples;               // 현재 선택된 사과 오브젝트 List
     [HideInInspector] public List<GameObject> lastSelectedApples;           // 이전에 선택된 사과 오브젝트 List
 
+    private bool isProcessingMatch = false;                                 // 현재 매치 처리 중인지 여부를 나타내는 플래그 (중복 실행 방지용)
+    private Coroutine currentMatchProcess = null;                           // 현재 실행 중인 매치 처리 코루틴의 참조 (취소 가능하도록 저장)
+
     private HashSet<string> positionCombinations = new HashSet<string>();   // 유효한 사과 조합의 위치 정보를 저장하는 HashSet
     private List<Vector2Int> tempPositions = new List<Vector2Int>(50);      // 조합 계산 시 임시로 사용하는 위치 List
     private List<int> tempNumbers = new List<int>(50);                      // 조합 계산 시 임시로 사용하는 숫자 List
@@ -153,7 +156,7 @@ public class GameManager : MonoBehaviour
     // 선택된 사과들의 합 계산 함수
     public void CalculateApples()
     {
-        if (selectedApples.Count == 0) return;
+        if (selectedApples.Count <= 1) return;
 
         int totalAppleNum = 0;
 
@@ -168,17 +171,20 @@ public class GameManager : MonoBehaviour
 
         if (totalAppleNum == 10)
         {
-            // 점수 계산을 위해 lastSelectedApples 동기화
-            lastSelectedApples.Clear();
-            for (int i = 0; i < selectedApples.Count; i++)
+            // 이미 매치 처리가 진행 중인 경우, 기존 처리를 중단하고 새 매치로 교체
+            if (isProcessingMatch && currentMatchProcess != null)
             {
-                lastSelectedApples.Add(selectedApples[i]);
+                //Debug.Log("기존 매치 처리 중단, 새 매치로 전환");
+                StopCoroutine(currentMatchProcess);
+                isProcessingMatch = false;
             }
 
-            AddScore();
             SpawnEffectsOnSelectedApples();
+            AddScore();
             UpdateScore();
-            StartCoroutine(ProcessMatchedApples(selectedApples));
+
+            isProcessingMatch = true;
+            currentMatchProcess = StartCoroutine(ProcessMatchedApples(lastSelectedApples));
             selectedApples.Clear();
         }
         else
@@ -190,67 +196,45 @@ public class GameManager : MonoBehaviour
     // 매칭된 사과들 처리를 위한 코루틴
     private IEnumerator ProcessMatchedApples(List<GameObject> matchedApples)
     {
-        // 사과들을 드롭
-        int count = matchedApples.Count;
-        Apple[] appleComponents = new Apple[count];
-
-        for (int i = 0; i < count; i++)
+        try
         {
-            appleComponents[i] = matchedApples[i].GetComponent<Apple>();
-            appleComponents[i].DropApple();
-        }
+            // 사과들을 드롭
+            int count = matchedApples.Count;
+            Apple[] appleComponents = new Apple[count];
 
-        // 드롭 애니메이션이 완료될 때까지 대기 (2초)
-        yield return new WaitForSeconds(2f);
-
-        // 게임 종료 확인
-        if (isGameOver)
-        {
-            yield break;
-        }
-
-        // 드래그 중일 때의 처리
-        if (dragManager.isDrag)
-        {
-            // 현재 드래그 중인 사과들의 정보를 임시 저장
-            List<GameObject> tempSelectedApples = new List<GameObject>(selectedApples);
-
-            // 드래그가 끝날 때까지 대기
-            yield return new WaitUntil(() => !dragManager.isDrag);
-
-            // 저장해둔 사과들의 합이 10인지 확인
-            if (tempSelectedApples.Count > 0)
+            for (int i = 0; i < count; i++)
             {
-                int sum = 0;
-                for (int i = 0; i < tempSelectedApples.Count; i++)
-                {
-                    sum += tempSelectedApples[i].GetComponent<Apple>().appleNum;
-                }
+                appleComponents[i] = matchedApples[i].GetComponent<Apple>();
+                appleComponents[i].DropApple();
+            }
 
-                // 합이 10이면 현재 코루틴 종료 (새로운 매치가 발생할 것이므로)
-                if (sum == 10)
-                {
-                    // 새로운 매치가 발생했더라도 현재 상태의 조합 개수는 계산
-                    CalculatePossibleCombinations();
-                    yield break;
-                }
+            // 드롭 애니메이션이 완료될 때까지 대기 (2초)
+            yield return new WaitForSeconds(2f);
+
+            // 게임 종료 확인
+            if (isGameOver)
+            {
+                yield break;
+            }
+
+            // 드래그 중일 때 완료될 때까지 대기 (가능한 조합 계산 최소화를 위해)
+            if (dragManager.isDrag)
+            {
+                yield return new WaitUntil(() => !dragManager.isDrag);
+            }
+
+            // 가능한 조합 계산
+            int possibleCombinations = CalculatePossibleCombinations();
+            if (possibleCombinations <= 3 && !setNumberPanel.activeSelf && remainingResets > 0)
+            {
+                remainingResets--;
+                StartCoroutine(StartCountdownAndRandomize());
             }
         }
-
-        // 드롭 중인 사과 확인
-        bool isAnyDropping = applePool.Any(apple => apple.isDropping);
-        if (isAnyDropping)
+        finally
         {
-            CalculatePossibleCombinations();
-            yield break;
-        }
-
-        // 가능한 조합 계산
-        int possibleCombinations = CalculatePossibleCombinations();
-        if (possibleCombinations <= 3 && !setNumberPanel.activeSelf && remainingResets > 0)
-        {
-            remainingResets--;
-            StartCoroutine(StartCountdownAndRandomize());
+            isProcessingMatch = false;
+            currentMatchProcess = null;
         }
     }
 
@@ -409,7 +393,58 @@ public class GameManager : MonoBehaviour
 
         float targetY = mainCamera.ScreenToWorldPoint(new Vector3(0, Screen.height / 2, 0)).y;
         appleImageRect.DOMoveY(targetY, 1f).SetEase(Ease.OutBounce);
+
+        //StartCoroutine(MoveWithBounceEffect(appleImageRect, targetY, 1f));
     }
+
+    /*
+    // 현재 사용중인 DoTween의 DOMoveY, SetEase와 동일한 효과
+    private IEnumerator MoveWithBounceEffect(RectTransform rectTransform, float targetY, float duration)
+    {
+        Vector2 startPosition = rectTransform.anchoredPosition;
+        float startY = startPosition.y;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float normalizedTime = elapsedTime / duration;
+
+            float yOffset = OutBounceEasing(normalizedTime);
+
+            float currentY = Mathf.Lerp(startY, targetY, yOffset);
+            rectTransform.anchoredPosition = new Vector2(startPosition.x, currentY);
+
+            yield return null;
+        }
+
+        // 애니메이션 종료 시 정확한 위치로 설정
+        rectTransform.anchoredPosition = new Vector2(startPosition.x, targetY);
+    }
+
+    private float OutBounceEasing(float t)
+    {
+        if (t < 1 / 2.75f)
+        {
+            return 7.5625f * t * t;
+        }
+        else if (t < 2 / 2.75f)
+        {
+            t -= 1.5f / 2.75f;
+            return 7.5625f * t * t + 0.75f;
+        }
+        else if (t < 2.5f / 2.75f)
+        {
+            t -= 2.25f / 2.75f;
+            return 7.5625f * t * t + 0.9375f;
+        }
+        else
+        {
+            t -= 2.625f / 2.75f;
+            return 7.5625f * t * t + 0.984375f;
+        }
+    }
+    */
 
     #endregion
 
