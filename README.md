@@ -1,8 +1,8 @@
 # Apple Game (사과게임)
 
-<img src="https://github.com/user-attachments/assets/09287781-b86d-44c8-8ea6-2ac904f485ae" width="250"></img>
-<img src="https://github.com/user-attachments/assets/20501fae-782f-426c-a269-b2ece03a1d26" width="250"></img>
-<img src="https://github.com/user-attachments/assets/3d0a8e88-f1b7-4f4a-8f13-09f02585a182" width="250"></img>
+<img src="https://github.com/user-attachments/assets/3092cc8e-cf05-45b7-98be-8264289ed474" width="250"></img>
+<img src="https://github.com/user-attachments/assets/d73cd1d3-1792-4864-89ed-f48fe92b9155" width="250"></img>
+<img src="https://github.com/user-attachments/assets/a5a93495-bd73-41cd-af95-9cf15aa5cbf6" width="250"></img>
 </br>
 
 
