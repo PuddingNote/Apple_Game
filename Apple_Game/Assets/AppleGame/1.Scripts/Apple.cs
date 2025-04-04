@@ -79,7 +79,7 @@ public class Apple : MonoBehaviour
     // 랜덤 숫자 생성
     public void SetRandomNumber()
     {
-        float randomValue = Random.Range(0f, 100f);
+        float randomValue = Random.Range(1f, 100f);
 
         if (randomValue <= 35f)             // 35% 확률로 1~3
         {
@@ -146,11 +146,11 @@ public class Apple : MonoBehaviour
     }
 
     // 드롭된 사과 숨기는 함수
-    public void HideApple()
+    private void HideApple()
     {
         if (appleImage != null)
         {
-            var color = appleImage.color;
+            Color color = appleImage.color;
             color.a = 0f;
             appleImage.color = color;
         }

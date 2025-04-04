@@ -14,9 +14,9 @@ public class DragManager : MonoBehaviour
     [HideInInspector] public bool isDrag;                   // 드래그 상태 여부
 
     private Vector2 currentMousePos;                                                    // 현재 마우스(터치) 스크린 좌표
-    private List<GameObject> currentlySelected;                                         // 현재 드래그 영역 내에 있는 사과 List
-    private List<GameObject> applesToDeselect;                                          // 드래그 영역에서 벗어나 선택 해제할 사과 List
-    private List<RectTransform> appleRectTransforms = new List<RectTransform>(120);     // 사과 UI 위치/크기 정보 캐싱 List
+    private List<GameObject> currentSelectedApples;                                     // 현재 드래그 영역 내에 있는 사과 List
+    private List<GameObject> deselectApples;                                            // 드래그 영역에서 벗어나 선택 해제할 사과 List
+    private List<RectTransform> rectTransformApples = new List<RectTransform>(120);     // 사과 UI 위치/크기 정보 캐싱 List
     private const float APPLE_BOUNDARY_SCALE = 0.3f;                                    // 사과 선택 판정 영역의 크기 배율
 
     [Header("--------------[ UI ]")]
@@ -29,7 +29,7 @@ public class DragManager : MonoBehaviour
 
     [Header("--------------[ ETC ]")]
     [SerializeField] private GameManager gameManager;       // GameManager 참조
-    [SerializeField] private ButtonManager buttonManager;   // ButtonManager 참조
+    [SerializeField] private OptionManager optionManager;   // OptionManager 참조
 
     #endregion
 
@@ -38,10 +38,7 @@ public class DragManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeCamera();
-        InitializeUI();
-        InitializeCollections();
-        CacheAppleTransforms();
+        InitializeDragManager();
     }
 
     private void Update()
@@ -52,12 +49,12 @@ public class DragManager : MonoBehaviour
             return;
         }
 
-        if (gameManager.isGameOver || buttonManager.IsActiveEscPanel())
+        if (gameManager.isGameOver || optionManager.IsActiveEscPanel())
         {
             return;
         }
 
-        HandleInput();
+        HandleInputDrag();
         if (isDrag)
         {
             UpdateDrag();
@@ -68,6 +65,15 @@ public class DragManager : MonoBehaviour
 
 
     #region Initialize
+
+    // DragManager 초기화 함수
+    private void InitializeDragManager()
+    {
+        InitializeCamera();
+        InitializeUI();
+        InitializeCollections();
+        CacheAppleTransforms();
+    }
 
     // 카메라 초기화 함수
     private void InitializeCamera()
@@ -86,8 +92,8 @@ public class DragManager : MonoBehaviour
     // 사과 리스트 초기화함수
     private void InitializeCollections()
     {
-        currentlySelected = new List<GameObject>();
-        applesToDeselect = new List<GameObject>();
+        currentSelectedApples = new List<GameObject>();
+        deselectApples = new List<GameObject>();
     }
 
     // 사과 오브젝트의 RectTransform 캐싱 함수
@@ -95,7 +101,7 @@ public class DragManager : MonoBehaviour
     {
         foreach (var apple in gameManager.appleObjects)
         {
-            appleRectTransforms.Add(apple.GetComponent<RectTransform>());
+            rectTransformApples.Add(apple.GetComponent<RectTransform>());
         }
     }
 
@@ -113,8 +119,8 @@ public class DragManager : MonoBehaviour
         }
 
         isDrag = false;
-        currentlySelected.Clear();
-        applesToDeselect.Clear();
+        currentSelectedApples.Clear();
+        deselectApples.Clear();
         gameManager.ClearSelectedApples();
     }
 
@@ -177,7 +183,7 @@ public class DragManager : MonoBehaviour
     #region Input Handling
 
     // 입력을 처리하여 드래그 동작을 수행하는 함수
-    private void HandleInput()
+    private void HandleInputDrag()
     {
         if (gameManager.isCountingDown)
         {
@@ -203,10 +209,10 @@ public class DragManager : MonoBehaviour
     #region Drag Apple
 
     // 드래그 영역 내의 사과들을 선택하는 함수
-    public void SelectApplesInDrag(Vector2 rectMinPos, Vector2 rectMaxPos)
+    private void SelectApplesInDrag(Vector2 rectMinPos, Vector2 rectMaxPos)
     {
-        currentlySelected.Clear();
-        applesToDeselect.Clear();
+        currentSelectedApples.Clear();
+        deselectApples.Clear();
 
         Rect dragRect = new Rect(
             rectMinPos.x,
@@ -225,7 +231,7 @@ public class DragManager : MonoBehaviour
                 continue;
             }
 
-            var rectTransform = appleRectTransforms[i];
+            var rectTransform = rectTransformApples[i];
             Vector3 appleScreenPos = mainCamera.WorldToScreenPoint(apple.transform.position);
             appleScreenPos.y = Screen.height - appleScreenPos.y;
 
@@ -241,7 +247,7 @@ public class DragManager : MonoBehaviour
 
             if (dragRect.Overlaps(appleRect))
             {
-                currentlySelected.Add(apple);
+                currentSelectedApples.Add(apple);
                 if (!gameManager.selectedApples.Contains(apple))
                 {
                     gameManager.selectedApples.Add(apple);
@@ -258,13 +264,13 @@ public class DragManager : MonoBehaviour
         var selectedApples = gameManager.selectedApples;
         foreach (var apple in selectedApples)
         {
-            if (!currentlySelected.Contains(apple))
+            if (!currentSelectedApples.Contains(apple))
             {
-                applesToDeselect.Add(apple);
+                deselectApples.Add(apple);
             }
         }
 
-        foreach (var apple in applesToDeselect)
+        foreach (var apple in deselectApples)
         {
             selectedApples.Remove(apple);
             apple.GetComponent<Apple>().ShowApple();
@@ -285,14 +291,6 @@ public class DragManager : MonoBehaviour
         currentMousePos = dragStartPos;
     }
 
-    // 드래그 종료 함수
-    public void EndDrag()
-    {
-        isDrag = false;
-        selectionBox.gameObject.SetActive(false);
-        gameManager.CalculateApples();
-    }
-
     // 드래그 업데이트 함수
     private void UpdateDrag()
     {
@@ -311,6 +309,14 @@ public class DragManager : MonoBehaviour
         SelectApplesInDrag(rectMinPos, rectMaxPos);
         gameManager.ChangeSelectedApplesNumberColor(Color.green);
         UpdateSelectionBox();
+    }
+
+    // 드래그 종료 함수
+    public void EndDrag()
+    {
+        isDrag = false;
+        selectionBox.gameObject.SetActive(false);
+        gameManager.CalculateApples();
     }
 
     #endregion

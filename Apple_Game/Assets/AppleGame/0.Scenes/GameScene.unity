@@ -774,7 +774,7 @@ MonoBehaviour:
   isDrag: 0
   selectionBox: {fileID: 1943782628}
   gameManager: {fileID: 1266444938}
-  buttonManager: {fileID: 1302941510}
+  optionManager: {fileID: 1302941510}
 --- !u!1 &249517519
 GameObject:
   m_ObjectHideFlags: 0
@@ -2211,7 +2211,7 @@ GameObject:
   - component: {fileID: 1302941511}
   - component: {fileID: 1302941510}
   m_Layer: 0
-  m_Name: ButtonManager
+  m_Name: OptionManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

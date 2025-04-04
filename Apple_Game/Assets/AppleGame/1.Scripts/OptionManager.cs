@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 using System.Collections.Generic;
 
-public class ButtonManager : MonoBehaviour
+public class OptionManager : MonoBehaviour
 {
 
 
@@ -30,12 +30,6 @@ public class ButtonManager : MonoBehaviour
     private TextMeshProUGUI bgmButtonText;          // BGM 버튼 Text
     private TextMeshProUGUI sfxButtonText;          // SFX 버튼 Text
 
-    [Header("--------------[ Sound Settings ]")]    
-    private bool isBgmOn = true;                    // BGM 상태
-    private bool isSfxOn = true;                    // SFX 상태
-    private readonly Color onColor = new Color(0f, 200f / 255f, 0f);    // On 상태 색상
-    private readonly Color offColor = Color.red;                        // Off 상태 색상
-
     [Header("--------------[ ETC ]")]
     private string currentSceneName;                                    // 현재 활성화된 씬의 이름
     private Vector3 buttonPressScale = new Vector3(0.95f, 0.95f, 1f);   // 버튼이 눌렸을 때의 크기 변화값
@@ -45,25 +39,9 @@ public class ButtonManager : MonoBehaviour
 
     #region Unity Methods
 
-    private void Awake()
-    {
-        mainCanvas = FindObjectOfType<Canvas>();
-        LoadSoundSettings();
-        currentSceneName = SceneManager.GetActiveScene().name;
-    }
-
     private void Start()
     {
-        InitializePausePanel();
-
-        if (currentSceneName == "TitleScene")
-        {
-            InitializeMainButton();
-            InitializeOptionPanel();
-            InitializeOptionButton();
-            InitializeHelpPanel();
-            InitializeCreditPanel();
-        }
+        InitializeButtonManager();
     }
 
     private void Update()
@@ -75,6 +53,35 @@ public class ButtonManager : MonoBehaviour
 
 
     #region Initialize
+
+    // ButtonManager 초기화 함수
+    private void InitializeButtonManager()
+    {
+        InitializePausePanel();
+
+        currentSceneName = SceneManager.GetActiveScene().name;
+        if (currentSceneName == "TitleScene")
+        {
+            InitializeMainButton();
+            InitializeOptionPanel();
+            InitializeOptionButton();
+            InitializeHelpPanel();
+            InitializeCreditPanel();
+        }
+    }
+
+    // 일시정지 패널 설정 초기화 함수
+    private void InitializePausePanel()
+    {
+        mainCanvas = FindObjectOfType<Canvas>();
+        escPanel = mainCanvas.transform.Find("Pause Panel").gameObject;
+
+        SetupButton(escPanel, "BackGround/Back Button", () => escPanel.SetActive(false));
+        SetupButton(escPanel, "BackGround/Title Button", GoTitle);
+        SetupButton(escPanel, "BackGround/Quit Button", QuitGame);
+
+        escPanel.SetActive(false);
+    }
 
     // 메인 버튼 초기화 함수
     private void InitializeMainButton()
@@ -96,18 +103,6 @@ public class ButtonManager : MonoBehaviour
         }
     }
 
-    // 일시정지 패널 설정 초기화 함수
-    private void InitializePausePanel()
-    {
-        escPanel = mainCanvas.transform.Find("Pause Panel").gameObject;
-
-        SetupButton(escPanel, "BackGround/Back Button", () => escPanel.SetActive(false));
-        SetupButton(escPanel, "BackGround/Title Button", GoTitle);
-        SetupButton(escPanel, "BackGround/Quit Button", QuitGame);
-
-        escPanel.SetActive(false);
-    }
-
     // 옵션 패널 설정 초기화 함수
     private void InitializeOptionPanel()
     {
@@ -120,9 +115,9 @@ public class ButtonManager : MonoBehaviour
             bgmButton = bgmButtonTransform.GetComponent<Button>();
             bgmButtonImage = bgmButtonTransform.GetComponent<Image>();
             bgmButtonText = bgmButtonTransform.GetComponentInChildren<TextMeshProUGUI>();
-            bgmButton.onClick.AddListener(ToggleBGM);
-            UpdateButtonColor(bgmButtonImage, isBgmOn);
-            UpdateButtonText(bgmButtonText, isBgmOn);
+            bgmButton.onClick.AddListener(ToggleBgm);
+            SoundManager.Instance.UpdateButtonColor(bgmButtonImage, SoundManager.Instance.IsBgmOn());
+            SoundManager.Instance.UpdateButtonText(bgmButtonText, SoundManager.Instance.IsBgmOn());
 
             AddButtonClickFeedback(bgmButton);
         }
@@ -134,9 +129,9 @@ public class ButtonManager : MonoBehaviour
             sfxButton = sfxButtonTransform.GetComponent<Button>();
             sfxButtonImage = sfxButtonTransform.GetComponent<Image>();
             sfxButtonText = sfxButtonTransform.GetComponentInChildren<TextMeshProUGUI>();
-            sfxButton.onClick.AddListener(ToggleSFX);
-            UpdateButtonColor(sfxButtonImage, isSfxOn);
-            UpdateButtonText(sfxButtonText, isSfxOn);
+            sfxButton.onClick.AddListener(ToggleSfx);
+            SoundManager.Instance.UpdateButtonColor(sfxButtonImage, SoundManager.Instance.IsSfxOn());
+            SoundManager.Instance.UpdateButtonText(sfxButtonText, SoundManager.Instance.IsSfxOn());
 
             AddButtonClickFeedback(sfxButton);
         }
@@ -314,76 +309,25 @@ public class ButtonManager : MonoBehaviour
     #region Sound Management
 
     // BGM 토글 함수
-    private void ToggleBGM()
+    private void ToggleBgm()
     {
-        isBgmOn = !isBgmOn;
-        UpdateButtonColor(bgmButtonImage, isBgmOn);
-        UpdateButtonText(bgmButtonText, isBgmOn);
-        SaveSoundSettings();
-
         if (SoundManager.Instance != null)
         {
-            SoundManager.Instance.UpdateBGMState();
+            SoundManager.Instance.ToggleBgm();
+            SoundManager.Instance.UpdateButtonColor(bgmButtonImage, SoundManager.Instance.IsBgmOn());
+            SoundManager.Instance.UpdateButtonText(bgmButtonText, SoundManager.Instance.IsBgmOn());
         }
     }
 
     // SFX 토글 함수
-    private void ToggleSFX()
+    private void ToggleSfx()
     {
-        isSfxOn = !isSfxOn;
-        UpdateButtonColor(sfxButtonImage, isSfxOn);
-        UpdateButtonText(sfxButtonText, isSfxOn);
-        SaveSoundSettings();
-
         if (SoundManager.Instance != null)
         {
-            SoundManager.Instance.UpdateSFXState();
+            SoundManager.Instance.ToggleSfx();
+            SoundManager.Instance.UpdateButtonColor(sfxButtonImage, SoundManager.Instance.IsSfxOn());
+            SoundManager.Instance.UpdateButtonText(sfxButtonText, SoundManager.Instance.IsSfxOn());
         }
-    }
-
-    // 버튼 색상 업데이트 함수
-    private void UpdateButtonColor(Image buttonImage, bool isOn)
-    {
-        if (buttonImage != null)
-        {
-            buttonImage.color = isOn ? onColor : offColor;
-        }
-    }
-
-    // 버튼 텍스트 업데이트 함수
-    private void UpdateButtonText(TextMeshProUGUI buttonText, bool isOn)
-    {
-        if (buttonText != null)
-        {
-            buttonText.text = isOn ? "On" : "Off";
-        }
-    }
-
-    // BGM 상태 확인 함수
-    public bool IsBGMOn()
-    {
-        return isBgmOn;
-    }
-
-    // SFX 상태 확인 함수
-    public bool IsSFXOn()
-    {
-        return isSfxOn;
-    }
-
-    // 사운드 설정 저장 함수
-    private void SaveSoundSettings()
-    {
-        PlayerPrefs.SetInt("BGM", isBgmOn ? 1 : 0);
-        PlayerPrefs.SetInt("SFX", isSfxOn ? 1 : 0);
-        PlayerPrefs.Save();
-    }
-
-    // 사운드 설정 불러오기 함수
-    private void LoadSoundSettings()
-    {
-        isBgmOn = PlayerPrefs.GetInt("BGM", 1) == 1;
-        isSfxOn = PlayerPrefs.GetInt("SFX", 1) == 1;
     }
 
     #endregion

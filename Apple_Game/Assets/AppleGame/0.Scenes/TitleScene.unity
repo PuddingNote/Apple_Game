@@ -4350,7 +4350,7 @@ GameObject:
   - component: {fileID: 1220443925}
   - component: {fileID: 1220443924}
   m_Layer: 0
-  m_Name: ButtonManager
+  m_Name: OptionManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7107,8 +7107,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bgmClip: {fileID: 8300000, guid: 8aa0dd3e4327be1419219c704a52681f, type: 3}
   sfxClip: {fileID: 8300000, guid: 932ae67eec9c540459dee04fb5d8eb3a, type: 3}
-  bgmVolume: 0.3
-  sfxVolume: 0.5
 --- !u!1 &1952280560
 GameObject:
   m_ObjectHideFlags: 0

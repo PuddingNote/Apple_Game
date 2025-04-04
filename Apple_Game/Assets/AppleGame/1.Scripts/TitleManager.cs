@@ -20,7 +20,7 @@ public class TitleManager : MonoBehaviour
     {
         Application.targetFrameRate = 60;
 
-        InitializeTitleUI();
+        InitializeTitleManager();
     }
 
     #endregion
@@ -29,7 +29,7 @@ public class TitleManager : MonoBehaviour
     #region Initialize
 
     // UI 초기화 함수
-    private void InitializeTitleUI()
+    private void InitializeTitleManager()
     {
         if (highScoreText != null)
         {

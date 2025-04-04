@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class SoundManager : MonoBehaviour
 {
@@ -20,9 +22,13 @@ public class SoundManager : MonoBehaviour
     [Header("--------------[ Sound Settings ]")]
     private float bgmVolume = 0.3f;                     // BGM 볼륨 크기
     private float sfxVolume = 0.5f;                     // SFX 볼륨 크기
+    private bool isBgmOn = true;                        // BGM 상태
+    private bool isSfxOn = true;                        // SFX 상태
+    private readonly Color onColor = new Color(0f, 200f / 255f, 0f);    // On 상태 색상
+    private readonly Color offColor = Color.red;                        // Off 상태 색상
 
     [Header("--------------[ ETC ]")]
-    private ButtonManager buttonManager;                // buttonManager 참조
+    private OptionManager optionManager;                // OptionManager 참조
 
     #endregion
 
@@ -36,7 +42,8 @@ public class SoundManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            InitializeAudio();
+            InitializeSoundManager();
+            LoadSoundSettings();
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
@@ -64,13 +71,14 @@ public class SoundManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         FindButtonManager();
+        UpdateAudioStates();
     }
 
     // ButtonManager를 찾는 함수
     private void FindButtonManager()
     {
-        buttonManager = FindObjectOfType<ButtonManager>();
-        if (buttonManager == null)
+        optionManager = FindObjectOfType<OptionManager>();
+        if (optionManager == null)
         {
             return;
         }
@@ -81,17 +89,17 @@ public class SoundManager : MonoBehaviour
     // 오디오 상태 업데이트 함수
     private void UpdateAudioStates()
     {
-        UpdateBGMState();
-        UpdateSFXState();
+        UpdateBgmState();
+        UpdateSfxState();
     }
 
     #endregion
 
 
-    #region Audio Management
+    #region Sound Management
 
     // 오디오 소스 초기화 함수
-    private void InitializeAudio()
+    private void InitializeSoundManager()
     {
         InitializeBGM();
         InitializeSFX();
@@ -111,6 +119,7 @@ public class SoundManager : MonoBehaviour
     private void InitializeSFX()
     {
         sfxSource = gameObject.AddComponent<AudioSource>();
+        sfxSource.clip = sfxClip;
         sfxSource.loop = false;
         sfxSource.playOnAwake = false;
         sfxSource.volume = sfxVolume;
@@ -130,48 +139,114 @@ public class SoundManager : MonoBehaviour
         }
 
         bgmSource.Play();
-        UpdateBGMState();
+        UpdateBgmState();
     }
 
     // SFX 재생 함수
-    public void PlaySFX()
+    public void PlaySfx()
     {
         if (sfxClip == null)
         {
             return;
         }
 
-        if (buttonManager == null)
+        if (optionManager == null)
         {
             FindButtonManager();
         }
 
-        if (buttonManager.IsSFXOn())
+        if (IsSfxOn())
         {
             sfxSource.PlayOneShot(sfxClip, sfxVolume);
         }
     }
 
     // BGM 상태 업데이트 함수
-    public void UpdateBGMState()
+    public void UpdateBgmState()
     {
-        if (buttonManager == null || bgmSource == null)
+        if (optionManager == null || bgmSource == null)
         {
             return;
         }
 
-        bgmSource.mute = !buttonManager.IsBGMOn();
+        bgmSource.mute = !IsBgmOn();
     }
 
     // SFX 상태 업데이트 함수
-    public void UpdateSFXState()
+    public void UpdateSfxState()
     {
-        if (buttonManager == null || sfxSource == null)
+        if (optionManager == null || sfxSource == null)
         {
             return;
         }
 
-        sfxSource.mute = !buttonManager.IsSFXOn();
+        sfxSource.mute = !IsSfxOn();
+    }
+
+    #endregion
+
+
+    #region Sound Settings
+
+    // Bgm 토글 함수
+    public void ToggleBgm()
+    {
+        isBgmOn = !isBgmOn;
+        SaveSoundSettings();
+        UpdateBgmState();
+    }
+
+    // Sfx 토글 함수
+    public void ToggleSfx()
+    {
+        isSfxOn = !isSfxOn;
+        SaveSoundSettings();
+        UpdateSfxState();
+    }
+
+    // Bgm On/Off 확인 함수
+    public bool IsBgmOn()
+    {
+        return isBgmOn;
+    }
+
+    // Sfx On/Off 확인 함수
+    public bool IsSfxOn()
+    {
+        return isSfxOn;
+    }
+
+    // 사운드 저장 함수
+    private void SaveSoundSettings()
+    {
+        PlayerPrefs.SetInt("BGM", isBgmOn ? 1 : 0);
+        PlayerPrefs.SetInt("SFX", isSfxOn ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
+    // 사운드 로드 함수
+    private void LoadSoundSettings()
+    {
+        isBgmOn = PlayerPrefs.GetInt("BGM", 1) == 1;
+        isSfxOn = PlayerPrefs.GetInt("SFX", 1) == 1;
+    }
+
+    // 사운드 버튼 색 변경 함수
+    public void UpdateButtonColor(Image buttonImage, bool isOn)
+    {
+        if (buttonImage != null)
+        {
+            buttonImage.color = isOn ? onColor : offColor;
+        }
+    }
+
+    // 사운드 버튼 텍스트 변경 함수
+    public void UpdateButtonText(TextMeshProUGUI buttonText, bool isOn)
+    {
+        if (buttonText != null)
+        {
+            buttonText.text = isOn ? "On" : "Off";
+        }
     }
 
     #endregion

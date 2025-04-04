@@ -5,7 +5,16 @@ using UnityEngine;
 
 public class GoogleManager : MonoBehaviour
 {
+
+
+    #region Variables
+
     AppUpdateManager appUpdateManager;
+
+    #endregion
+
+
+    #region Unity Methods
 
     private void Awake()
     {
@@ -15,6 +24,11 @@ public class GoogleManager : MonoBehaviour
         StartCoroutine(CheckForUpdate());
 #endif
     }
+
+    #endregion
+
+
+    #region Google App Update Check
 
     IEnumerator CheckForUpdate()
     {
@@ -78,5 +92,8 @@ public class GoogleManager : MonoBehaviour
             // 앱 정보가 확인이 안되는 상태
         }
     }
+
+    #endregion
+
 
 }

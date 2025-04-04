@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
     {
         Application.targetFrameRate = 60;
 
-        InitializeGame();
+        InitializeGameManager();
     }
 
     private void Start()
@@ -104,7 +104,7 @@ public class GameManager : MonoBehaviour
     #region Initialize
 
     // 게임 초기 설정 함수
-    private void InitializeGame()
+    private void InitializeGameManager()
     {
         mainCamera = Camera.main;
         highScore = PlayerPrefs.GetInt("HighScore", 0);
@@ -121,7 +121,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < POOL_SIZE; i++)
         {
-            MakeApple();
+            MakeApples();
         }
 
         // appleObjects 배열 초기화 및 applePool의 정보를 복사
@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
     #region Apple Selection & Matching
 
     // 새로운 사과 오브젝트 생성 함수
-    public void MakeApple()
+    private void MakeApples()
     {
         GameObject newApple = Instantiate(applePrefab, appleGroup);
 
@@ -277,7 +277,7 @@ public class GameManager : MonoBehaviour
     }
 
     // 이전에 선택된 사과들의 숫자 색상을 초기화하는 함수
-    public void ClearLastSelectedApples()
+    private void ClearLastSelectedApplesColor()
     {
         int count = lastSelectedApples.Count;
         for (int i = 0; i < count; i++)
@@ -293,7 +293,7 @@ public class GameManager : MonoBehaviour
     // 드래그중 선택된 사과들의 숫자 색상을 변경하는 함수
     public void ChangeSelectedApplesNumberColor(Color color)
     {
-        ClearLastSelectedApples();
+        ClearLastSelectedApplesColor();
 
         int count = selectedApples.Count;
         for (int i = 0; i < count; i++)
@@ -334,7 +334,7 @@ public class GameManager : MonoBehaviour
         // 매칭 효과음 재생
         if (SoundManager.Instance != null)
         {
-            SoundManager.Instance.PlaySFX();
+            SoundManager.Instance.PlaySfx();
         }
 
         // 최고 점수 갱신 확인 및 저장
@@ -375,7 +375,7 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         dragManager.EndDrag();
-        ClearLastSelectedApples();
+        ClearLastSelectedApplesColor();
 
         // 최고 터뜨린 사과 개수 갱신 및 저장
         int highDestroyedAppleCount = PlayerPrefs.GetInt("HighDestroyedAppleCount", 0);
@@ -545,7 +545,7 @@ public class GameManager : MonoBehaviour
 
         // 현재 선택된 사과들 초기화
         ClearSelectedApples();
-        ClearLastSelectedApples();
+        ClearLastSelectedApplesColor();
 
         float previousTimeScale = Time.timeScale;
         Time.timeScale = 0f;
