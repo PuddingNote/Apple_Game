@@ -99,7 +99,7 @@ public class DragManager : MonoBehaviour
     // 사과 오브젝트의 RectTransform 캐싱 함수
     private void CacheAppleTransforms()
     {
-        foreach (var apple in gameManager.appleObjects)
+        foreach (GameObject apple in gameManager.appleObjects)
         {
             rectTransformApples.Add(apple.GetComponent<RectTransform>());
         }
@@ -221,17 +221,17 @@ public class DragManager : MonoBehaviour
             rectMaxPos.y - rectMinPos.y
         );
 
-        var appleObjects = gameManager.appleObjects;
+        GameObject[] appleObjects = gameManager.appleObjects;
         for (int i = 0; i < appleObjects.Length; i++)
         {
-            var apple = appleObjects[i];
-            var appleComponent = apple.GetComponent<Apple>();
+            GameObject apple = appleObjects[i];
+            Apple appleComponent = apple.GetComponent<Apple>();
             if (appleComponent == null || appleComponent.appleNum == 0 || appleComponent.isDropping)
             {
                 continue;
             }
 
-            var rectTransform = rectTransformApples[i];
+            RectTransform rectTransform = rectTransformApples[i];
             Vector3 appleScreenPos = mainCamera.WorldToScreenPoint(apple.transform.position);
             appleScreenPos.y = Screen.height - appleScreenPos.y;
 
@@ -261,8 +261,8 @@ public class DragManager : MonoBehaviour
     // 선택 해제 로직 최적화 함수
     private void ProcessDeselectedApples()
     {
-        var selectedApples = gameManager.selectedApples;
-        foreach (var apple in selectedApples)
+        List<GameObject> selectedApples = gameManager.selectedApples;
+        foreach (GameObject apple in selectedApples)
         {
             if (!currentSelectedApples.Contains(apple))
             {
@@ -270,7 +270,7 @@ public class DragManager : MonoBehaviour
             }
         }
 
-        foreach (var apple in deselectApples)
+        foreach (GameObject apple in deselectApples)
         {
             selectedApples.Remove(apple);
             apple.GetComponent<Apple>().ShowApple();

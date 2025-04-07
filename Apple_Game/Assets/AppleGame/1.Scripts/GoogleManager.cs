@@ -42,11 +42,11 @@ public class GoogleManager : MonoBehaviour
         if (appUpdateInfoOperation.IsSuccessful)
         {
             // 업데이트가 있는 상태
-            var appUpdateInfoResult = appUpdateInfoOperation.GetResult();
+            AppUpdateInfo appUpdateInfoResult = appUpdateInfoOperation.GetResult();
             if (appUpdateInfoResult.UpdateAvailability == UpdateAvailability.UpdateAvailable)
             {
-                var appUpdateOptions = AppUpdateOptions.ImmediateAppUpdateOptions();
-                var startUpdateRequest = appUpdateManager.StartUpdate(appUpdateInfoResult, appUpdateOptions);
+                AppUpdateOptions appUpdateOptions = AppUpdateOptions.ImmediateAppUpdateOptions();
+                AppUpdateRequest startUpdateRequest = appUpdateManager.StartUpdate(appUpdateInfoResult, appUpdateOptions);
                 while (!startUpdateRequest.IsDone)
                 {
                     if (startUpdateRequest.Status == AppUpdateStatus.Downloading)
@@ -64,7 +64,7 @@ public class GoogleManager : MonoBehaviour
                 }
 
                 // 완료되었는지 마지막 확인
-                var result = appUpdateManager.CompleteUpdate();
+                PlayAsyncOperation<VoidResult, AppUpdateErrorCode> result = appUpdateManager.CompleteUpdate();
                 while (!result.IsDone)
                 {
                     yield return new WaitForEndOfFrame();

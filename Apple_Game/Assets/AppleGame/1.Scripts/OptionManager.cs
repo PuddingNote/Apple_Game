@@ -217,8 +217,8 @@ public class OptionManager : MonoBehaviour
         // 포인터 다운, 업 이벤트 추가
         if (trigger.triggers.Count == 0)
         {
-            var pointerDown = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
-            var pointerUp = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
+            EventTrigger.Entry pointerDown = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
+            EventTrigger.Entry pointerUp = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
 
             pointerDown.callback.AddListener((data) => { OnButtonDown(button.transform); });
             pointerUp.callback.AddListener((data) => { OnButtonUp(button.transform); });
