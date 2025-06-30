@@ -12,10 +12,17 @@
   - 주어진 시간내에 가능한 한 많은 사과를 합쳐 높은 점수를 기록
 ## 3. 개발 환경
   - Unity, C#
+## 4. 구글 플레이 스토어 링크
+  - https://play.google.com/store/apps/details?id=com.Bouncy_Pudding.AppleGame
+</br>
+</br>
 </br>
 
-
 ## 개발 일지
+<details>
+  <summary>👉 펼쳐 보기</summary>
+</br>
+
 [2024-06-19]
 - Project Setting
 - Add Apple Prefab
@@ -228,3 +235,5 @@
 [2025-04-04]
 - 전체적인 코드 리팩토링
 </br>
+
+</details>
