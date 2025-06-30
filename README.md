@@ -1,4 +1,4 @@
-# Apple Game (사과게임)
+# 사과게임 (Apple Game)
 
 <img src="https://github.com/user-attachments/assets/3092cc8e-cf05-45b7-98be-8264289ed474" width="250"></img>
 <img src="https://github.com/user-attachments/assets/d73cd1d3-1792-4864-89ed-f48fe92b9155" width="250"></img>
@@ -18,7 +18,7 @@
 </br>
 </br>
 
-## 개발 일지
+## [개발 일지]
 <details>
   <summary>👉 펼쳐 보기</summary>
 </br>
