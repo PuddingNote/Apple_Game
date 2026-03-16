@@ -12,11 +12,12 @@
   - 주어진 시간내에 가능한 한 많은 사과를 합쳐 높은 점수를 기록
 ## 3. 개발 환경
   - Unity, C#
-## 4. 구글 플레이스토어 링크 (2025.07.04 사업자 폐업으로 인해 게시 중단)
+## 4. 기타 관련
+  - [유튜브 영상](https://www.youtube.com/watch?v=FazhQT4WzEw)
+## 5. 구글 플레이스토어 링크 (2025.07.04 사업자 폐업으로 인해 게시 중단)
   - ~~https://play.google.com/store/apps/details?id=com.Bouncy_Pudding.AppleGame~~
 <img src="https://github.com/user-attachments/assets/da9b26a5-0440-49b7-902c-21d06dded400" width="700"></img>
 
-</br>
 </br>
 </br>
 
