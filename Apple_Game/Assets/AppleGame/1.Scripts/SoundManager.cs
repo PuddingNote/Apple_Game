@@ -12,23 +12,23 @@ public class SoundManager : MonoBehaviour
     public static SoundManager Instance { get; private set; }
 
     [Header("--------------[ Audio Sources ]")]
-    private AudioSource bgmSource;                      // BGM Àç»ı¿ë AudioSource
-    private AudioSource sfxSource;                      // SFX Àç»ı¿ë AudioSource
+    private AudioSource bgmSource;                      // BGM ì¬ìƒìš© AudioSource
+    private AudioSource sfxSource;                      // SFX ì¬ìƒìš© AudioSource
 
     [Header("--------------[ Audio Clips ]")]
-    [SerializeField] private AudioClip bgmClip;         // BGM Å¬¸³
-    [SerializeField] private AudioClip sfxClip;         // SFX Å¬¸³
+    [SerializeField] private AudioClip bgmClip;         // BGM í´ë¦½
+    [SerializeField] private AudioClip sfxClip;         // SFX í´ë¦½
 
     [Header("--------------[ Sound Settings ]")]
-    private float bgmVolume = 0.3f;                     // BGM º¼·ı Å©±â
-    private float sfxVolume = 0.5f;                     // SFX º¼·ı Å©±â
-    private bool isBgmOn = true;                        // BGM »óÅÂ
-    private bool isSfxOn = true;                        // SFX »óÅÂ
-    private readonly Color onColor = new Color(0f, 200f / 255f, 0f);    // On »óÅÂ »ö»ó
-    private readonly Color offColor = Color.red;                        // Off »óÅÂ »ö»ó
+    private float bgmVolume = 0.3f;                     // BGM ë³¼ë¥¨ í¬ê¸°
+    private float sfxVolume = 0.5f;                     // SFX ë³¼ë¥¨ í¬ê¸°
+    private bool isBgmOn = true;                        // BGM ìƒíƒœ
+    private bool isSfxOn = true;                        // SFX ìƒíƒœ
+    private readonly Color onColor = new Color(0f, 200f / 255f, 0f);    // On ìƒíƒœ ìƒ‰ìƒ
+    private readonly Color offColor = Color.red;                        // Off ìƒíƒœ ìƒ‰ìƒ
 
     [Header("--------------[ ETC ]")]
-    private OptionManager optionManager;                // OptionManager ÂüÁ¶
+    private OptionManager optionManager;                // OptionManager ì°¸ì¡°
 
     #endregion
 
@@ -67,14 +67,14 @@ public class SoundManager : MonoBehaviour
 
     #region Scene Management
 
-    // ¾À ·Îµå ¿Ï·á ½Ã È£ÃâµÇ´Â ÇÔ¼ö
+    // ì”¬ ë¡œë“œ ì™„ë£Œ ì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         FindButtonManager();
         UpdateAudioStates();
     }
 
-    // ButtonManager¸¦ Ã£´Â ÇÔ¼ö
+    // ButtonManagerë¥¼ ì°¾ëŠ” í•¨ìˆ˜
     private void FindButtonManager()
     {
         optionManager = FindObjectOfType<OptionManager>();
@@ -86,7 +86,7 @@ public class SoundManager : MonoBehaviour
         UpdateAudioStates();
     }
 
-    // ¿Àµğ¿À »óÅÂ ¾÷µ¥ÀÌÆ® ÇÔ¼ö
+    // ì˜¤ë””ì˜¤ ìƒíƒœ ì—…ë°ì´íŠ¸ í•¨ìˆ˜
     private void UpdateAudioStates()
     {
         UpdateBgmState();
@@ -98,14 +98,14 @@ public class SoundManager : MonoBehaviour
 
     #region Sound Management
 
-    // ¿Àµğ¿À ¼Ò½º ÃÊ±âÈ­ ÇÔ¼ö
+    // ì˜¤ë””ì˜¤ ì†ŒìŠ¤ ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializeSoundManager()
     {
         InitializeBGM();
         InitializeSFX();
     }
 
-    // BGM ÃÊ±âÈ­ ÇÔ¼ö
+    // BGM ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializeBGM()
     {
         bgmSource = gameObject.AddComponent<AudioSource>();
@@ -115,7 +115,7 @@ public class SoundManager : MonoBehaviour
         bgmSource.volume = bgmVolume;
     }
 
-    // SFX ÃÊ±âÈ­ ÇÔ¼ö
+    // SFX ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializeSFX()
     {
         sfxSource = gameObject.AddComponent<AudioSource>();
@@ -125,7 +125,7 @@ public class SoundManager : MonoBehaviour
         sfxSource.volume = sfxVolume;
     }
 
-    // BGM Àç»ı ÇÔ¼ö
+    // BGM ì¬ìƒ í•¨ìˆ˜
     public void PlayBGM()
     {
         if (bgmSource?.clip == null)
@@ -142,7 +142,25 @@ public class SoundManager : MonoBehaviour
         UpdateBgmState();
     }
 
-    // SFX Àç»ı ÇÔ¼ö
+    // ì „ë©´ê´‘ê³  ë…¸ì¶œ ì¤‘ BGM ì¼ì‹œì •ì§€ í•¨ìˆ˜
+    public void PauseBGM()
+    {
+        if (bgmSource != null && bgmSource.isPlaying)
+        {
+            bgmSource.Pause();
+        }
+    }
+
+    // ì „ë©´ê´‘ê³  ë‹«í˜ í›„ BGM ì¬ê°œ í•¨ìˆ˜
+    public void ResumeBGM()
+    {
+        if (bgmSource != null && !bgmSource.isPlaying && IsBgmOn())
+        {
+            bgmSource.UnPause();
+        }
+    }
+
+    // SFX ì¬ìƒ í•¨ìˆ˜
     public void PlaySfx()
     {
         if (sfxClip == null)
@@ -161,7 +179,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // BGM »óÅÂ ¾÷µ¥ÀÌÆ® ÇÔ¼ö
+    // BGM ìƒíƒœ ì—…ë°ì´íŠ¸ í•¨ìˆ˜
     public void UpdateBgmState()
     {
         if (optionManager == null || bgmSource == null)
@@ -172,7 +190,7 @@ public class SoundManager : MonoBehaviour
         bgmSource.mute = !IsBgmOn();
     }
 
-    // SFX »óÅÂ ¾÷µ¥ÀÌÆ® ÇÔ¼ö
+    // SFX ìƒíƒœ ì—…ë°ì´íŠ¸ í•¨ìˆ˜
     public void UpdateSfxState()
     {
         if (optionManager == null || sfxSource == null)
@@ -188,7 +206,7 @@ public class SoundManager : MonoBehaviour
 
     #region Sound Settings
 
-    // Bgm Åä±Û ÇÔ¼ö
+    // Bgm í† ê¸€ í•¨ìˆ˜
     public void ToggleBgm()
     {
         isBgmOn = !isBgmOn;
@@ -196,7 +214,7 @@ public class SoundManager : MonoBehaviour
         UpdateBgmState();
     }
 
-    // Sfx Åä±Û ÇÔ¼ö
+    // Sfx í† ê¸€ í•¨ìˆ˜
     public void ToggleSfx()
     {
         isSfxOn = !isSfxOn;
@@ -204,19 +222,19 @@ public class SoundManager : MonoBehaviour
         UpdateSfxState();
     }
 
-    // Bgm On/Off È®ÀÎ ÇÔ¼ö
+    // Bgm On/Off í™•ì¸ í•¨ìˆ˜
     public bool IsBgmOn()
     {
         return isBgmOn;
     }
 
-    // Sfx On/Off È®ÀÎ ÇÔ¼ö
+    // Sfx On/Off í™•ì¸ í•¨ìˆ˜
     public bool IsSfxOn()
     {
         return isSfxOn;
     }
 
-    // »ç¿îµå ÀúÀå ÇÔ¼ö
+    // ì‚¬ìš´ë“œ ì €ì¥ í•¨ìˆ˜
     private void SaveSoundSettings()
     {
         PlayerPrefs.SetInt("BGM", isBgmOn ? 1 : 0);
@@ -224,14 +242,14 @@ public class SoundManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    // »ç¿îµå ·Îµå ÇÔ¼ö
+    // ì‚¬ìš´ë“œ ë¡œë“œ í•¨ìˆ˜
     private void LoadSoundSettings()
     {
         isBgmOn = PlayerPrefs.GetInt("BGM", 1) == 1;
         isSfxOn = PlayerPrefs.GetInt("SFX", 1) == 1;
     }
 
-    // »ç¿îµå ¹öÆ° »ö º¯°æ ÇÔ¼ö
+    // ì‚¬ìš´ë“œ ë²„íŠ¼ ìƒ‰ ë³€ê²½ í•¨ìˆ˜
     public void UpdateButtonColor(Image buttonImage, bool isOn)
     {
         if (buttonImage != null)
@@ -240,7 +258,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // »ç¿îµå ¹öÆ° ÅØ½ºÆ® º¯°æ ÇÔ¼ö
+    // ì‚¬ìš´ë“œ ë²„íŠ¼ í…ìŠ¤íŠ¸ ë³€ê²½ í•¨ìˆ˜
     public void UpdateButtonText(TextMeshProUGUI buttonText, bool isOn)
     {
         if (buttonText != null)

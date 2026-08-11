@@ -13,57 +13,57 @@ public class GameManager : MonoBehaviour
     #region Variables
 
     [Header("--------------[ Game Control ]")]
-    private int score = 0;                              // ÇöÀç °ÔÀÓ Á¡¼ö
-    private int highScore = 0;                          // ÃÖ°í Á¡¼ö
-    private int appleScore = 10;                        // ±âº» »ç°ú Á¡¼ö
-    private int destroyedApples = 0;                    // ÅÍ¶ß¸° »ç°ú °³¼ö
-    [HideInInspector] public bool isGameOver;           // °ÔÀÓ Á¾·á »óÅÂ ¿©ºÎ
-    [HideInInspector] public bool isCountingDown;       // Ä«¿îÆ®´Ù¿î ÁøÇà Áß ¿©ºÎ
-    private int remainingResets = 2;                    // ³²Àº ¼ıÀÚ Àç¼³Á¤ È½¼ö
+    private int score = 0;                              // í˜„ì¬ ê²Œì„ ì ìˆ˜
+    private int highScore = 0;                          // ìµœê³  ì ìˆ˜
+    private int appleScore = 10;                        // ê¸°ë³¸ ì‚¬ê³¼ ì ìˆ˜
+    private int destroyedApples = 0;                    // í„°ëœ¨ë¦° ì‚¬ê³¼ ê°œìˆ˜
+    [HideInInspector] public bool isGameOver;           // ê²Œì„ ì¢…ë£Œ ìƒíƒœ ì—¬ë¶€
+    [HideInInspector] public bool isCountingDown;       // ì¹´ìš´íŠ¸ë‹¤ìš´ ì§„í–‰ ì¤‘ ì—¬ë¶€
+    private int remainingResets = 2;                    // ë‚¨ì€ ìˆ«ì ì¬ì„¤ì • íšŸìˆ˜
 
     [Header("--------------[ Game Setting ]")]
-    [SerializeField] private GameObject applePrefab;    // »ç°ú ÇÁ¸®Æé
-    [SerializeField] private Transform appleGroup;      // ¿ÀºêÁ§Æ® Ç®¸µÀ» ¼³Á¤ÇÒ »ç°ú ºÎ¸ğ ¿ÀºêÁ§Æ®
-    private List<Apple> applePool;                      // »ç°ú ¿ÀºêÁ§Æ® Ç® List
-    private const int POOL_SIZE = 120;                  // ¿ÀºêÁ§Æ® Ç® ÃÖ´ë Å©±â
-    private const int GRID_WIDTH = 15;                  // °ÔÀÓ ±×¸®µå °¡·Î »çÀÌÁî
-    private const int GRID_HEIGHT = 8;                  // °ÔÀÓ ±×¸®µå ¼¼·Î »çÀÌÁî
-    private const int TARGET_COUNT = 3;                 // º¸³Ê½º Á¡¼ö¸¦ À§ÇÑ ÃÖ¼Ò »ç°ú °³¼ö
+    [SerializeField] private GameObject applePrefab;    // ì‚¬ê³¼ í”„ë¦¬í©
+    [SerializeField] private Transform appleGroup;      // ì˜¤ë¸Œì íŠ¸ í’€ë§ì„ ì„¤ì •í•  ì‚¬ê³¼ ë¶€ëª¨ ì˜¤ë¸Œì íŠ¸
+    private List<Apple> applePool;                      // ì‚¬ê³¼ ì˜¤ë¸Œì íŠ¸ í’€ List
+    private const int POOL_SIZE = 120;                  // ì˜¤ë¸Œì íŠ¸ í’€ ìµœëŒ€ í¬ê¸°
+    private const int GRID_WIDTH = 15;                  // ê²Œì„ ê·¸ë¦¬ë“œ ê°€ë¡œ ì‚¬ì´ì¦ˆ
+    private const int GRID_HEIGHT = 8;                  // ê²Œì„ ê·¸ë¦¬ë“œ ì„¸ë¡œ ì‚¬ì´ì¦ˆ
+    private const int TARGET_COUNT = 3;                 // ë³´ë„ˆìŠ¤ ì ìˆ˜ë¥¼ ìœ„í•œ ìµœì†Œ ì‚¬ê³¼ ê°œìˆ˜
 
-    [HideInInspector] public GameObject[] appleObjects;                     // È°¼ºÈ­µÈ »ç°ú ¿ÀºêÁ§Æ® ¹è¿­
-    [HideInInspector] public List<GameObject> selectedApples;               // ÇöÀç ¼±ÅÃµÈ »ç°ú ¿ÀºêÁ§Æ® List
-    [HideInInspector] public List<GameObject> lastSelectedApples;           // ÀÌÀü¿¡ ¼±ÅÃµÈ »ç°ú ¿ÀºêÁ§Æ® List
+    [HideInInspector] public GameObject[] appleObjects;                     // í™œì„±í™”ëœ ì‚¬ê³¼ ì˜¤ë¸Œì íŠ¸ ë°°ì—´
+    [HideInInspector] public List<GameObject> selectedApples;               // í˜„ì¬ ì„ íƒëœ ì‚¬ê³¼ ì˜¤ë¸Œì íŠ¸ List
+    [HideInInspector] public List<GameObject> lastSelectedApples;           // ì´ì „ì— ì„ íƒëœ ì‚¬ê³¼ ì˜¤ë¸Œì íŠ¸ List
 
-    private bool isProcessingMatch = false;                                 // ÇöÀç ¸ÅÄ¡ Ã³¸® ÁßÀÎÁö ¿©ºÎ¸¦ ³ªÅ¸³»´Â ÇÃ·¡±× (Áßº¹ ½ÇÇà ¹æÁö¿ë)
-    private Coroutine currentMatchProcess = null;                           // ÇöÀç ½ÇÇà ÁßÀÎ ¸ÅÄ¡ Ã³¸® ÄÚ·çÆ¾ÀÇ ÂüÁ¶ (Ãë¼Ò °¡´ÉÇÏµµ·Ï ÀúÀå)
+    private bool isProcessingMatch = false;                                 // í˜„ì¬ ë§¤ì¹˜ ì²˜ë¦¬ ì¤‘ì¸ì§€ ì—¬ë¶€ë¥¼ ë‚˜íƒ€ë‚´ëŠ” í”Œë˜ê·¸ (ì¤‘ë³µ ì‹¤í–‰ ë°©ì§€ìš©)
+    private Coroutine currentMatchProcess = null;                           // í˜„ì¬ ì‹¤í–‰ ì¤‘ì¸ ë§¤ì¹˜ ì²˜ë¦¬ ì½”ë£¨í‹´ì˜ ì°¸ì¡° (ì·¨ì†Œ ê°€ëŠ¥í•˜ë„ë¡ ì €ì¥)
 
-    private HashSet<string> positionCombinations = new HashSet<string>();   // À¯È¿ÇÑ »ç°ú Á¶ÇÕÀÇ À§Ä¡ Á¤º¸¸¦ ÀúÀåÇÏ´Â HashSet
-    private List<Vector2Int> tempPositions = new List<Vector2Int>(50);      // Á¶ÇÕ °è»ê ½Ã ÀÓ½Ã·Î »ç¿ëÇÏ´Â À§Ä¡ List
-    private List<int> tempNumbers = new List<int>(50);                      // Á¶ÇÕ °è»ê ½Ã ÀÓ½Ã·Î »ç¿ëÇÏ´Â ¼ıÀÚ List
+    private HashSet<string> positionCombinations = new HashSet<string>();   // ìœ íš¨í•œ ì‚¬ê³¼ ì¡°í•©ì˜ ìœ„ì¹˜ ì •ë³´ë¥¼ ì €ì¥í•˜ëŠ” HashSet
+    private List<Vector2Int> tempPositions = new List<Vector2Int>(50);      // ì¡°í•© ê³„ì‚° ì‹œ ì„ì‹œë¡œ ì‚¬ìš©í•˜ëŠ” ìœ„ì¹˜ List
+    private List<int> tempNumbers = new List<int>(50);                      // ì¡°í•© ê³„ì‚° ì‹œ ì„ì‹œë¡œ ì‚¬ìš©í•˜ëŠ” ìˆ«ì List
 
     [Header("--------------[ UI References ]")]
-    [SerializeField] private TextMeshProUGUI scoreText;                     // ÇöÀç Á¡¼ö¸¦ Ç¥½ÃÇÏ´Â Text (ScoreGroupÀÇ Score Text)
-    [SerializeField] private TextMeshProUGUI endScoreText;                  // °ÔÀÓ Á¾·á ½Ã Á¡¼ö¸¦ Ç¥½ÃÇÏ´Â Text (EndGroupÀÇ End ScoreText)
-    [SerializeField] private GameObject endGroup;                           // °ÔÀÓ Á¾·á UI ±×·ì (CanvasÀÇ EndGroup)
-    [SerializeField] private RectTransform appleImageRect;                  // °ÔÀÓ Á¾·á ½Ã ¶³¾îÁö´Â »ç°ú ÀÌ¹ÌÁöÀÇ RectTransform (EndGroupÀÇ Apple ImageÀÇ ÁÂÇ¥)
-    [SerializeField] private TextMeshProUGUI timeText;                      // ³²Àº °ÔÀÓ ½Ã°£À» Ç¥½ÃÇÏ´Â Text
-    [SerializeField] private TextMeshProUGUI destroyedAppleCountText;       // ÅÍ¶ß¸° »ç°ú °³¼ö¸¦ Ç¥½ÃÇÏ´Â Text
+    [SerializeField] private TextMeshProUGUI scoreText;                     // í˜„ì¬ ì ìˆ˜ë¥¼ í‘œì‹œí•˜ëŠ” Text (ScoreGroupì˜ Score Text)
+    [SerializeField] private TextMeshProUGUI endScoreText;                  // ê²Œì„ ì¢…ë£Œ ì‹œ ì ìˆ˜ë¥¼ í‘œì‹œí•˜ëŠ” Text (EndGroupì˜ End ScoreText)
+    [SerializeField] private GameObject endGroup;                           // ê²Œì„ ì¢…ë£Œ UI ê·¸ë£¹ (Canvasì˜ EndGroup)
+    [SerializeField] private RectTransform appleImageRect;                  // ê²Œì„ ì¢…ë£Œ ì‹œ ë–¨ì–´ì§€ëŠ” ì‚¬ê³¼ ì´ë¯¸ì§€ì˜ RectTransform (EndGroupì˜ Apple Imageì˜ ì¢Œí‘œ)
+    [SerializeField] private TextMeshProUGUI timeText;                      // ë‚¨ì€ ê²Œì„ ì‹œê°„ì„ í‘œì‹œí•˜ëŠ” Text
+    [SerializeField] private TextMeshProUGUI destroyedAppleCountText;       // í„°ëœ¨ë¦° ì‚¬ê³¼ ê°œìˆ˜ë¥¼ í‘œì‹œí•˜ëŠ” Text
 
-    [SerializeField] private GameObject setNumberPanel;                     // ¼ıÀÚ Àç¼³Á¤ ½Ã Ç¥½ÃµÇ´Â ÆĞ³Î (CanvasÀÇ SetNumberPanel)
-    [SerializeField] private TextMeshProUGUI countDownText;                 // ¼ıÀÚ Àç¼³Á¤ Ä«¿îÆ®´Ù¿î Text
-    private int countDown = 3;                                              // ¼ıÀÚ Àç¼³Á¤ Ä«¿îÆ®´Ù¿î ÃÊ±â°ª
+    [SerializeField] private GameObject setNumberPanel;                     // ìˆ«ì ì¬ì„¤ì • ì‹œ í‘œì‹œë˜ëŠ” íŒ¨ë„ (Canvasì˜ SetNumberPanel)
+    [SerializeField] private TextMeshProUGUI countDownText;                 // ìˆ«ì ì¬ì„¤ì • ì¹´ìš´íŠ¸ë‹¤ìš´ Text
+    private int countDown = 3;                                              // ìˆ«ì ì¬ì„¤ì • ì¹´ìš´íŠ¸ë‹¤ìš´ ì´ˆê¸°ê°’
 
     [Header("--------------[ Gaugebar ]")]
-    [SerializeField] private Slider timeSlider;         // ³²Àº ½Ã°£À» Ç¥½ÃÇÏ´Â °ÔÀÌÁö¹Ù
-    private const float TIME_LIMIT = 60f;               // °ÔÀÓ Á¦ÇÑ ½Ã°£(ÃÊ)
-    private float currentTime;                          // ÇöÀç ³²Àº ½Ã°£
+    [SerializeField] private Slider timeSlider;         // ë‚¨ì€ ì‹œê°„ì„ í‘œì‹œí•˜ëŠ” ê²Œì´ì§€ë°”
+    private const float TIME_LIMIT = 60f;               // ê²Œì„ ì œí•œ ì‹œê°„(ì´ˆ)
+    private float currentTime;                          // í˜„ì¬ ë‚¨ì€ ì‹œê°„
 
     [Header("--------------[ Effects ]")]
-    [SerializeField] private GameObject effectPrefab;   // »ç°ú ¸ÅÄª ½Ã »ı¼ºµÇ´Â ÀÌÆåÆ® ÇÁ¸®ÆÕ
+    [SerializeField] private GameObject effectPrefab;   // ì‚¬ê³¼ ë§¤ì¹­ ì‹œ ìƒì„±ë˜ëŠ” ì´í™íŠ¸ í”„ë¦¬íŒ¹
 
     [Header("--------------[ ETC ]")]
-    [SerializeField] private DragManager dragManager;   // DragManager ÂüÁ¶
-    private Camera mainCamera;                          // mainCamera ÂüÁ¶
+    [SerializeField] private DragManager dragManager;   // DragManager ì°¸ì¡°
+    private Camera mainCamera;                          // mainCamera ì°¸ì¡°
 
     #endregion
 
@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour
 
     #region Initialize
 
-    // °ÔÀÓ ÃÊ±â ¼³Á¤ ÇÔ¼ö
+    // ê²Œì„ ì´ˆê¸° ì„¤ì • í•¨ìˆ˜
     private void InitializeGameManager()
     {
         mainCamera = Camera.main;
@@ -124,14 +124,14 @@ public class GameManager : MonoBehaviour
             MakeApples();
         }
 
-        // appleObjects ¹è¿­ ÃÊ±âÈ­ ¹× applePoolÀÇ Á¤º¸¸¦ º¹»ç
+        // appleObjects ë°°ì—´ ì´ˆê¸°í™” ë° applePoolì˜ ì •ë³´ë¥¼ ë³µì‚¬
         appleObjects = new GameObject[applePool.Count];
         for (int i = 0; i < applePool.Count; i++)
         {
             appleObjects[i] = applePool[i].gameObject;
         }
 
-        // °ÔÀÌÁö¹Ù ÃÊ±âÈ­
+        // ê²Œì´ì§€ë°” ì´ˆê¸°í™”
         timeSlider.maxValue = TIME_LIMIT;
         currentTime = TIME_LIMIT;
         UpdateTimeUI();
@@ -142,7 +142,7 @@ public class GameManager : MonoBehaviour
 
     #region Apple Selection & Matching
 
-    // »õ·Î¿î »ç°ú ¿ÀºêÁ§Æ® »ı¼º ÇÔ¼ö
+    // ìƒˆë¡œìš´ ì‚¬ê³¼ ì˜¤ë¸Œì íŠ¸ ìƒì„± í•¨ìˆ˜
     private void MakeApples()
     {
         GameObject newApple = Instantiate(applePrefab, appleGroup);
@@ -153,7 +153,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ¼±ÅÃµÈ »ç°úµéÀÇ ÇÕ °è»ê ÇÔ¼ö
+    // ì„ íƒëœ ì‚¬ê³¼ë“¤ì˜ í•© ê³„ì‚° í•¨ìˆ˜
     public void CalculateApples()
     {
         if (selectedApples.Count <= 1) return;
@@ -171,10 +171,10 @@ public class GameManager : MonoBehaviour
 
         if (totalAppleNum == 10)
         {
-            // ÀÌ¹Ì ¸ÅÄ¡ Ã³¸®°¡ ÁøÇà ÁßÀÎ °æ¿ì, ±âÁ¸ Ã³¸®¸¦ Áß´ÜÇÏ°í »õ ¸ÅÄ¡·Î ±³Ã¼
+            // ì´ë¯¸ ë§¤ì¹˜ ì²˜ë¦¬ê°€ ì§„í–‰ ì¤‘ì¸ ê²½ìš°, ê¸°ì¡´ ì²˜ë¦¬ë¥¼ ì¤‘ë‹¨í•˜ê³  ìƒˆ ë§¤ì¹˜ë¡œ êµì²´
             if (isProcessingMatch && currentMatchProcess != null)
             {
-                //Debug.Log("±âÁ¸ ¸ÅÄ¡ Ã³¸® Áß´Ü, »õ ¸ÅÄ¡·Î ÀüÈ¯");
+                //Debug.Log("ê¸°ì¡´ ë§¤ì¹˜ ì²˜ë¦¬ ì¤‘ë‹¨, ìƒˆ ë§¤ì¹˜ë¡œ ì „í™˜");
                 StopCoroutine(currentMatchProcess);
                 isProcessingMatch = false;
             }
@@ -193,12 +193,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ¸ÅÄªµÈ »ç°úµé Ã³¸®¸¦ À§ÇÑ ÄÚ·çÆ¾
+    // ë§¤ì¹­ëœ ì‚¬ê³¼ë“¤ ì²˜ë¦¬ë¥¼ ìœ„í•œ ì½”ë£¨í‹´
     private IEnumerator ProcessMatchedApples(List<GameObject> matchedApples)
     {
         try
         {
-            // »ç°úµéÀ» µå·Ó
+            // ì‚¬ê³¼ë“¤ì„ ë“œë¡­
             int count = matchedApples.Count;
             Apple[] appleComponents = new Apple[count];
 
@@ -208,22 +208,22 @@ public class GameManager : MonoBehaviour
                 appleComponents[i].DropApple();
             }
 
-            // µå·Ó ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ¿Ï·áµÉ ¶§±îÁö ´ë±â (2ÃÊ)
+            // ë“œë¡­ ì• ë‹ˆë©”ì´ì…˜ì´ ì™„ë£Œë  ë•Œê¹Œì§€ ëŒ€ê¸° (2ì´ˆ)
             yield return new WaitForSeconds(2f);
 
-            // °ÔÀÓ Á¾·á È®ÀÎ
+            // ê²Œì„ ì¢…ë£Œ í™•ì¸
             if (isGameOver)
             {
                 yield break;
             }
 
-            // µå·¡±× ÁßÀÏ ¶§ ¿Ï·áµÉ ¶§±îÁö ´ë±â (°¡´ÉÇÑ Á¶ÇÕ °è»ê ÃÖ¼ÒÈ­¸¦ À§ÇØ)
+            // ë“œë˜ê·¸ ì¤‘ì¼ ë•Œ ì™„ë£Œë  ë•Œê¹Œì§€ ëŒ€ê¸° (ê°€ëŠ¥í•œ ì¡°í•© ê³„ì‚° ìµœì†Œí™”ë¥¼ ìœ„í•´)
             if (dragManager.isDrag)
             {
                 yield return new WaitUntil(() => !dragManager.isDrag);
             }
 
-            // °¡´ÉÇÑ Á¶ÇÕ °è»ê
+            // ê°€ëŠ¥í•œ ì¡°í•© ê³„ì‚°
             int possibleCombinations = CalculatePossibleCombinations();
             if (possibleCombinations <= 3 && !setNumberPanel.activeSelf && remainingResets > 0)
             {
@@ -238,7 +238,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ¼±ÅÃµÈ »ç°úÀÇ À§Ä¡¿¡ ÀÌÆåÆ® »ı¼º ÇÔ¼ö
+    // ì„ íƒëœ ì‚¬ê³¼ì˜ ìœ„ì¹˜ì— ì´í™íŠ¸ ìƒì„± í•¨ìˆ˜
     private void SpawnEffectsOnSelectedApples()
     {
         int count = selectedApples.Count;
@@ -255,14 +255,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // »ı¼ºµÈ ÀÌÆåÆ®¸¦ ÀÏÁ¤ ½Ã°£ ÈÄ Á¦°ÅÇÏ´Â ÄÚ·çÆ¾
+    // ìƒì„±ëœ ì´í™íŠ¸ë¥¼ ì¼ì • ì‹œê°„ í›„ ì œê±°í•˜ëŠ” ì½”ë£¨í‹´
     private IEnumerator DestroyEffectAfterDelay(GameObject effect)
     {
         yield return new WaitForSeconds(1f);
         Destroy(effect);
     }
 
-    // ¼±ÅÃµÈ »ç°úµé ÃÊ±âÈ­ ÇÔ¼ö
+    // ì„ íƒëœ ì‚¬ê³¼ë“¤ ì´ˆê¸°í™” í•¨ìˆ˜
     public void ClearSelectedApples()
     {
         int count = selectedApples.Count;
@@ -276,7 +276,7 @@ public class GameManager : MonoBehaviour
         selectedApples.Clear();
     }
 
-    // ÀÌÀü¿¡ ¼±ÅÃµÈ »ç°úµéÀÇ ¼ıÀÚ »ö»óÀ» ÃÊ±âÈ­ÇÏ´Â ÇÔ¼ö
+    // ì´ì „ì— ì„ íƒëœ ì‚¬ê³¼ë“¤ì˜ ìˆ«ì ìƒ‰ìƒì„ ì´ˆê¸°í™”í•˜ëŠ” í•¨ìˆ˜
     private void ClearLastSelectedApplesColor()
     {
         int count = lastSelectedApples.Count;
@@ -290,7 +290,7 @@ public class GameManager : MonoBehaviour
         lastSelectedApples.Clear();
     }
 
-    // µå·¡±×Áß ¼±ÅÃµÈ »ç°úµéÀÇ ¼ıÀÚ »ö»óÀ» º¯°æÇÏ´Â ÇÔ¼ö
+    // ë“œë˜ê·¸ì¤‘ ì„ íƒëœ ì‚¬ê³¼ë“¤ì˜ ìˆ«ì ìƒ‰ìƒì„ ë³€ê²½í•˜ëŠ” í•¨ìˆ˜
     public void ChangeSelectedApplesNumberColor(Color color)
     {
         ClearLastSelectedApplesColor();
@@ -311,7 +311,7 @@ public class GameManager : MonoBehaviour
 
     #region Score & UI
 
-    // Á¡¼ö Ãß°¡ ÇÔ¼ö
+    // ì ìˆ˜ ì¶”ê°€ í•¨ìˆ˜
     private void AddScore()
     {
         int count = lastSelectedApples.Count;
@@ -322,7 +322,7 @@ public class GameManager : MonoBehaviour
 
         int baseScore = count * appleScore;
 
-        // º¸³Ê½º Á¡¼ö °è»ê (3°³ ÀÌ»ó ¼±ÅÃ ½Ã)
+        // ë³´ë„ˆìŠ¤ ì ìˆ˜ ê³„ì‚° (3ê°œ ì´ìƒ ì„ íƒ ì‹œ)
         int bonusScore = 0;
         if (count >= TARGET_COUNT)
         {
@@ -331,13 +331,13 @@ public class GameManager : MonoBehaviour
 
         score += baseScore + bonusScore;
 
-        // ¸ÅÄª È¿°úÀ½ Àç»ı
+        // ë§¤ì¹­ íš¨ê³¼ìŒ ì¬ìƒ
         if (SoundManager.Instance != null)
         {
             SoundManager.Instance.PlaySfx();
         }
 
-        // ÃÖ°í Á¡¼ö °»½Å È®ÀÎ ¹× ÀúÀå
+        // ìµœê³  ì ìˆ˜ ê°±ì‹  í™•ì¸ ë° ì €ì¥
         if (score > highScore)
         {
             highScore = score;
@@ -346,38 +346,38 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Á¡¼ö ¾÷µ¥ÀÌÆ® ÇÔ¼ö
+    // ì ìˆ˜ ì—…ë°ì´íŠ¸ í•¨ìˆ˜
     private void UpdateScore()
     {
         if (scoreText != null)
         {
-            scoreText.text = $"Á¡¼ö: {score}";
+            scoreText.text = $"ì ìˆ˜: {score}";
         }
     }
 
-    // ½Ã°£ ¾÷µ¥ÀÌÆ® ÇÔ¼ö
+    // ì‹œê°„ ì—…ë°ì´íŠ¸ í•¨ìˆ˜
     private void UpdateTimeUI()
     {
         timeSlider.value = currentTime;
         timeText.text = Mathf.CeilToInt(currentTime).ToString();
     }
 
-    // »ç°ú °³¼ö ¾÷µ¥ÀÌÆ® ÇÔ¼ö
+    // ì‚¬ê³¼ ê°œìˆ˜ ì—…ë°ì´íŠ¸ í•¨ìˆ˜
     private void UpdateAppleCount()
     {
         if (destroyedAppleCountText != null)
         {
-            destroyedAppleCountText.text = $"»ç°ú°³¼ö: {destroyedApples}";
+            destroyedAppleCountText.text = $"ì‚¬ê³¼ê°œìˆ˜: {destroyedApples}";
         }
     }
 
-    // °ÔÀÓ¿À¹ö ÇÔ¼ö
+    // ê²Œì„ì˜¤ë²„ í•¨ìˆ˜
     private void GameOver()
     {
         dragManager.EndDrag();
         ClearLastSelectedApplesColor();
 
-        // ÃÖ°í ÅÍ¶ß¸° »ç°ú °³¼ö °»½Å ¹× ÀúÀå
+        // ìµœê³  í„°ëœ¨ë¦° ì‚¬ê³¼ ê°œìˆ˜ ê°±ì‹  ë° ì €ì¥
         int highDestroyedAppleCount = PlayerPrefs.GetInt("HighDestroyedAppleCount", 0);
         if (destroyedApples > highDestroyedAppleCount)
         {
@@ -385,7 +385,7 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
         }
 
-        endScoreText.text = $"ÃÖ°í Á¡¼ö: {highScore}\nÇöÀç Á¡¼ö: {score}\n»ç°ú °³¼ö: {destroyedApples}";
+        endScoreText.text = $"ìµœê³  ì ìˆ˜: {highScore}\ní˜„ì¬ ì ìˆ˜: {score}\nì‚¬ê³¼ ê°œìˆ˜: {destroyedApples}";
         Vector2 startPosition = new Vector2(appleImageRect.anchoredPosition.x, 1050);
         appleImageRect.anchoredPosition = startPosition;
 
@@ -394,11 +394,17 @@ public class GameManager : MonoBehaviour
         float targetY = mainCamera.ScreenToWorldPoint(new Vector3(0, Screen.height / 2, 0)).y;
         appleImageRect.DOMoveY(targetY, 1f).SetEase(Ease.OutBounce);
 
+        // í•œ íŒì´ ëë‚¬ìŒì„ AdManagerì— ì•Œë¦¼ (3íŒë§ˆë‹¤ 1íšŒ ì „ë©´ê´‘ê³  ì¹´ìš´íŠ¸ìš©)
+        if (AdManager.Instance != null)
+        {
+            AdManager.Instance.NotifyGameCompleted();
+        }
+
         //StartCoroutine(MoveWithBounceEffect(appleImageRect, targetY, 1f));
     }
 
     /*
-    // ÇöÀç »ç¿ëÁßÀÎ DoTweenÀÇ DOMoveY, SetEase¿Í µ¿ÀÏÇÑ È¿°ú
+    // í˜„ì¬ ì‚¬ìš©ì¤‘ì¸ DoTweenì˜ DOMoveY, SetEaseì™€ ë™ì¼í•œ íš¨ê³¼
     private IEnumerator MoveWithBounceEffect(RectTransform rectTransform, float targetY, float duration)
     {
         Vector2 startPosition = rectTransform.anchoredPosition;
@@ -418,7 +424,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        // ¾Ö´Ï¸ŞÀÌ¼Ç Á¾·á ½Ã Á¤È®ÇÑ À§Ä¡·Î ¼³Á¤
+        // ì• ë‹ˆë©”ì´ì…˜ ì¢…ë£Œ ì‹œ ì •í™•í•œ ìœ„ì¹˜ë¡œ ì„¤ì •
         rectTransform.anchoredPosition = new Vector2(startPosition.x, targetY);
     }
 
@@ -451,24 +457,24 @@ public class GameManager : MonoBehaviour
 
     #region Apple Combination Calculation
 
-    // »ç°ú Á¶ÇÕ °¡´É ¼ö °è»ê (Áßº¹ Á¦¿Ü)
+    // ì‚¬ê³¼ ì¡°í•© ê°€ëŠ¥ ìˆ˜ ê³„ì‚° (ì¤‘ë³µ ì œì™¸)
     private int CalculatePossibleCombinations()
     {
         positionCombinations.Clear();
 
-        // ¸ğµç °¡´ÉÇÑ Á÷»ç°¢Çü ¿µ¿ª °Ë»ç
+        // ëª¨ë“  ê°€ëŠ¥í•œ ì§ì‚¬ê°í˜• ì˜ì—­ ê²€ì‚¬
         for (int startRow = 0; startRow < GRID_HEIGHT; startRow++)
         {
             for (int startCol = 0; startCol < GRID_WIDTH; startCol++)
             {
-                // ½ÃÀÛ À§Ä¡ÀÇ »ç°ú°¡ À¯È¿ÇÏÁö ¾ÊÀ¸¸é ½ºÅµ
+                // ì‹œì‘ ìœ„ì¹˜ì˜ ì‚¬ê³¼ê°€ ìœ íš¨í•˜ì§€ ì•Šìœ¼ë©´ ìŠ¤í‚µ
                 Apple startApple = appleObjects[startRow * GRID_WIDTH + startCol].GetComponent<Apple>();
                 if (startApple == null || startApple.appleNum <= 0)
                 {
                     continue;
                 }
 
-                // °¡´ÉÇÑ ¸ğµç Á÷»ç°¢Çü Å©±â¿¡ ´ëÇØ Á¶ÇÕ °¡´É ¼ö °è»ê
+                // ê°€ëŠ¥í•œ ëª¨ë“  ì§ì‚¬ê°í˜• í¬ê¸°ì— ëŒ€í•´ ì¡°í•© ê°€ëŠ¥ ìˆ˜ ê³„ì‚°
                 for (int height = 1; height <= Math.Min(GRID_HEIGHT, GRID_HEIGHT - startRow); height++)
                 {
                     for (int width = 1; width <= Math.Min(GRID_WIDTH, GRID_WIDTH - startCol); width++)
@@ -480,11 +486,11 @@ public class GameManager : MonoBehaviour
         }
 
         int count = positionCombinations.Count;
-        //Debug.Log($"Á¶ÇÕ °¡´É °³¼ö: {count}");
+        //Debug.Log($"ì¡°í•© ê°€ëŠ¥ ê°œìˆ˜: {count}");
         return count;
     }
 
-    // ÁÖ¾îÁø Å©±â¿¡ ¸Â°Ô Á¶ÇÕ °¡´É ¼ö °è»ê ÇÔ¼ö
+    // ì£¼ì–´ì§„ í¬ê¸°ì— ë§ê²Œ ì¡°í•© ê°€ëŠ¥ ìˆ˜ ê³„ì‚° í•¨ìˆ˜
     private void CheckRectangleArea(int startRow, int startCol, int height, int width, int gridWidth)
     {
         tempPositions.Clear();
@@ -492,7 +498,7 @@ public class GameManager : MonoBehaviour
         int sum = 0;
         bool hasValidApples = false;
 
-        // Á÷»ç°¢Çü ¿µ¿ª ³»ÀÇ ¸ğµç »ç°ú ¼öÁı
+        // ì§ì‚¬ê°í˜• ì˜ì—­ ë‚´ì˜ ëª¨ë“  ì‚¬ê³¼ ìˆ˜ì§‘
         for (int r = startRow; r < startRow + height; r++)
         {
             for (int c = startCol; c < startCol + width; c++)
@@ -508,13 +514,13 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // À¯È¿ÇÑ »ç°ú°¡ 2°³ ÀÌ»óÀÌ°í ÇÕÀÌ 10ÀÎ °æ¿ì¸¸ Ã³¸®
+        // ìœ íš¨í•œ ì‚¬ê³¼ê°€ 2ê°œ ì´ìƒì´ê³  í•©ì´ 10ì¸ ê²½ìš°ë§Œ ì²˜ë¦¬
         if (hasValidApples && tempNumbers.Count >= 2 && sum == 10)
         {
-            // À§Ä¡µéÀ» Á¤·ÄÇÏ¿© ÀÏ°üµÈ Å° »ı¼º
+            // ìœ„ì¹˜ë“¤ì„ ì •ë ¬í•˜ì—¬ ì¼ê´€ëœ í‚¤ ìƒì„±
             tempPositions.Sort((a, b) => (a.x * gridWidth + a.y).CompareTo(b.x * gridWidth + b.y));
 
-            // Áßº¹ Ã¼Å©
+            // ì¤‘ë³µ ì²´í¬
             string positionKey = string.Join("|", tempPositions.Select(p => $"{p.x},{p.y}"));
             if (!positionCombinations.Contains(positionKey))
             {
@@ -523,7 +529,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // »ç°ú ¼ıÀÚ ·£´ı º¯°æ ÇÔ¼ö
+    // ì‚¬ê³¼ ìˆ«ì ëœë¤ ë³€ê²½ í•¨ìˆ˜
     private void RandomizeAppleNumbers()
     {
         Apple[] appleComponents = new Apple[appleObjects.Length];
@@ -537,13 +543,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Ä«¿îÆ®´Ù¿î ÄÚ·çÆ¾
+    // ì¹´ìš´íŠ¸ë‹¤ìš´ ì½”ë£¨í‹´
     private IEnumerator StartCountdownAndRandomize()
     {
         isCountingDown = true;
         setNumberPanel.SetActive(true);
 
-        // ÇöÀç ¼±ÅÃµÈ »ç°úµé ÃÊ±âÈ­
+        // í˜„ì¬ ì„ íƒëœ ì‚¬ê³¼ë“¤ ì´ˆê¸°í™”
         ClearSelectedApples();
         ClearLastSelectedApplesColor();
 

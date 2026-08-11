@@ -12,27 +12,27 @@ public class OptionManager : MonoBehaviour
     #region Variables
 
     [Header("--------------[ UI References ]")]
-    private Canvas mainCanvas;                      // Canvas ÂüÁ¶
+    private Canvas mainCanvas;                      // Canvas ì°¸ì¡°
 
-    private GameObject escPanel;                    // ÀÏ½ÃÁ¤Áö ÆĞ³Î
-    private GameObject optionPanel;                 // ¿É¼Ç ÆĞ³Î
-    private GameObject helpPanel;                   // µµ¿ò¸» ÆĞ³Î
-    private GameObject creditPanel;                 // Å©·¹µ÷ ÆĞ³Î
+    private GameObject escPanel;                    // ì¼ì‹œì •ì§€ íŒ¨ë„
+    private GameObject optionPanel;                 // ì˜µì…˜ íŒ¨ë„
+    private GameObject helpPanel;                   // ë„ì›€ë§ íŒ¨ë„
+    private GameObject creditPanel;                 // í¬ë ˆë”§ íŒ¨ë„
 
     [Header("--------------[ Buttons ]")]
-    private Button optionButton;                    // ¿É¼Ç ¹öÆ°
-    private Button bgmButton;                       // BGM ¹öÆ°
-    private Button sfxButton;                       // SFX ¹öÆ°
+    private Button optionButton;                    // ì˜µì…˜ ë²„íŠ¼
+    private Button bgmButton;                       // BGM ë²„íŠ¼
+    private Button sfxButton;                       // SFX ë²„íŠ¼
 
-    private Image bgmButtonImage;                   // BGM ¹öÆ° ÀÌ¹ÌÁö
-    private Image sfxButtonImage;                   // SFX ¹öÆ° ÀÌ¹ÌÁö
+    private Image bgmButtonImage;                   // BGM ë²„íŠ¼ ì´ë¯¸ì§€
+    private Image sfxButtonImage;                   // SFX ë²„íŠ¼ ì´ë¯¸ì§€
 
-    private TextMeshProUGUI bgmButtonText;          // BGM ¹öÆ° Text
-    private TextMeshProUGUI sfxButtonText;          // SFX ¹öÆ° Text
+    private TextMeshProUGUI bgmButtonText;          // BGM ë²„íŠ¼ Text
+    private TextMeshProUGUI sfxButtonText;          // SFX ë²„íŠ¼ Text
 
     [Header("--------------[ ETC ]")]
-    private string currentSceneName;                                    // ÇöÀç È°¼ºÈ­µÈ ¾ÀÀÇ ÀÌ¸§
-    private Vector3 buttonPressScale = new Vector3(0.95f, 0.95f, 1f);   // ¹öÆ°ÀÌ ´­·ÈÀ» ¶§ÀÇ Å©±â º¯È­°ª
+    private string currentSceneName;                                    // í˜„ì¬ í™œì„±í™”ëœ ì”¬ì˜ ì´ë¦„
+    private Vector3 buttonPressScale = new Vector3(0.95f, 0.95f, 1f);   // ë²„íŠ¼ì´ ëˆŒë ¸ì„ ë•Œì˜ í¬ê¸° ë³€í™”ê°’
 
     #endregion
 
@@ -54,7 +54,7 @@ public class OptionManager : MonoBehaviour
 
     #region Initialize
 
-    // ButtonManager ÃÊ±âÈ­ ÇÔ¼ö
+    // ButtonManager ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializeButtonManager()
     {
         InitializePausePanel();
@@ -70,10 +70,10 @@ public class OptionManager : MonoBehaviour
         }
     }
 
-    // ÀÏ½ÃÁ¤Áö ÆĞ³Î ¼³Á¤ ÃÊ±âÈ­ ÇÔ¼ö
+    // ì¼ì‹œì •ì§€ íŒ¨ë„ ì„¤ì • ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializePausePanel()
     {
-        mainCanvas = FindObjectOfType<Canvas>();
+        mainCanvas = FindMainCanvas();
         escPanel = mainCanvas.transform.Find("Pause Panel").gameObject;
 
         SetupButton(escPanel, "BackGround/Back Button", () => escPanel.SetActive(false));
@@ -83,10 +83,28 @@ public class OptionManager : MonoBehaviour
         escPanel.SetActive(false);
     }
 
-    // ¸ŞÀÎ ¹öÆ° ÃÊ±âÈ­ ÇÔ¼ö
+    // í˜„ì¬ ì”¬(í™œì„± ì”¬)ì— ì†í•œ Canvasë§Œ ì°¾ëŠ” í•¨ìˆ˜.
+    // FindObjectOfType<Canvas>()ëŠ” GameBootstrapì´ DontDestroyOnLoadë¡œ ë§Œë“œëŠ”
+    // ê°•ì œ ì—…ë°ì´íŠ¸ ì°¨ë‹¨ ì°½ì˜ Canvasê¹Œì§€ ê±¸ë¦´ ìˆ˜ ìˆì–´ ì”¬ ì†Œì†ìœ¼ë¡œ í•œì •í•œë‹¤.
+    private Canvas FindMainCanvas()
+    {
+        Scene activeScene = SceneManager.GetActiveScene();
+        foreach (GameObject rootObject in activeScene.GetRootGameObjects())
+        {
+            Canvas canvas = rootObject.GetComponentInChildren<Canvas>(true);
+            if (canvas != null)
+            {
+                return canvas;
+            }
+        }
+
+        return null;
+    }
+
+    // ë©”ì¸ ë²„íŠ¼ ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializeMainButton()
     {
-        // °ÔÀÓ ½ÃÀÛ ¹öÆ° ¼³Á¤
+        // ê²Œì„ ì‹œì‘ ë²„íŠ¼ ì„¤ì •
         Button startButton = mainCanvas.transform.Find("Start Group/Start Button").GetComponent<Button>();
         if (startButton != null)
         {
@@ -94,7 +112,7 @@ public class OptionManager : MonoBehaviour
             AddButtonClickFeedback(startButton);
         }
 
-        // °ÔÀÓ Á¾·á ¹öÆ° ¼³Á¤
+        // ê²Œì„ ì¢…ë£Œ ë²„íŠ¼ ì„¤ì •
         Button quitButton = mainCanvas.transform.Find("Start Group/Quit Button").GetComponent<Button>();
         if (quitButton != null)
         {
@@ -103,13 +121,13 @@ public class OptionManager : MonoBehaviour
         }
     }
 
-    // ¿É¼Ç ÆĞ³Î ¼³Á¤ ÃÊ±âÈ­ ÇÔ¼ö
+    // ì˜µì…˜ íŒ¨ë„ ì„¤ì • ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializeOptionPanel()
     {
         optionPanel = mainCanvas.transform.Find("Option Panel").gameObject;
 
-        // BGM On/Off ¹öÆ°
-        Transform bgmButtonTransform = optionPanel.transform.Find("BackGround/Sound Objects/¹è°æÀ½ Button");
+        // BGM On/Off ë²„íŠ¼
+        Transform bgmButtonTransform = optionPanel.transform.Find("BackGround/Sound Objects/ë°°ê²½ìŒ Button");
         if (bgmButtonTransform != null)
         {
             bgmButton = bgmButtonTransform.GetComponent<Button>();
@@ -122,8 +140,8 @@ public class OptionManager : MonoBehaviour
             AddButtonClickFeedback(bgmButton);
         }
 
-        // SFX On/Off ¹öÆ°
-        Transform sfxButtonTransform = optionPanel.transform.Find("BackGround/Sound Objects/È¿°úÀ½ Button");
+        // SFX On/Off ë²„íŠ¼
+        Transform sfxButtonTransform = optionPanel.transform.Find("BackGround/Sound Objects/íš¨ê³¼ìŒ Button");
         if (sfxButtonTransform != null)
         {
             sfxButton = sfxButtonTransform.GetComponent<Button>();
@@ -136,19 +154,19 @@ public class OptionManager : MonoBehaviour
             AddButtonClickFeedback(sfxButton);
         }
 
-        // µµ¿ò¸» ¹öÆ°
-        SetupButton(optionPanel, "BackGround/µµ¿ò¸» Button", () => helpPanel.SetActive(true));
+        // ë„ì›€ë§ ë²„íŠ¼
+        SetupButton(optionPanel, "BackGround/ë„ì›€ë§ Button", () => helpPanel.SetActive(true));
 
-        // Å©·¹µ÷ ¹öÆ°
-        SetupButton(optionPanel, "BackGround/Å©·¹µ÷ Button", () => creditPanel.SetActive(true));
+        // í¬ë ˆë”§ ë²„íŠ¼
+        SetupButton(optionPanel, "BackGround/í¬ë ˆë”§ Button", () => creditPanel.SetActive(true));
 
-        // µÚ·Î°¡±â ¹öÆ°
+        // ë’¤ë¡œê°€ê¸° ë²„íŠ¼
         SetupButton(optionPanel, "BackGround/Back Button", () => optionPanel.SetActive(false));
 
         optionPanel.SetActive(false);
     }
 
-    // ¿É¼Ç ¹öÆ° ÃÊ±âÈ­ ÇÔ¼ö
+    // ì˜µì…˜ ë²„íŠ¼ ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializeOptionButton()
     {
         optionButton = mainCanvas.transform.Find("Start Group/Option Button").GetComponent<Button>();
@@ -160,7 +178,7 @@ public class OptionManager : MonoBehaviour
         }
     }
 
-    // µµ¿ò¸» ÆĞ³Î ¼³Á¤ ÃÊ±âÈ­ ÇÔ¼ö
+    // ë„ì›€ë§ íŒ¨ë„ ì„¤ì • ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializeHelpPanel()
     {
         helpPanel = mainCanvas.transform.Find("Help Panel").gameObject;
@@ -169,7 +187,7 @@ public class OptionManager : MonoBehaviour
         SetupButton(helpPanel, "BackGround/Back Button", () => helpPanel.SetActive(false));
     }
 
-    // Å©·¹µ÷ ÆĞ³Î ¼³Á¤ ÃÊ±âÈ­ ÇÔ¼ö
+    // í¬ë ˆë”§ íŒ¨ë„ ì„¤ì • ì´ˆê¸°í™” í•¨ìˆ˜
     private void InitializeCreditPanel()
     {
         creditPanel = mainCanvas.transform.Find("Credit Panel").gameObject;
@@ -183,7 +201,7 @@ public class OptionManager : MonoBehaviour
 
     #region Button Utilities
 
-    // ¹öÆ° ¼³Á¤ ÇïÆÛ ÇÔ¼ö
+    // ë²„íŠ¼ ì„¤ì • í—¬í¼ í•¨ìˆ˜
     private void SetupButton(GameObject panel, string buttonPath, UnityEngine.Events.UnityAction action)
     {
         Transform buttonTransform = panel.transform.Find(buttonPath);
@@ -199,7 +217,7 @@ public class OptionManager : MonoBehaviour
         }
     }
 
-    // ¹öÆ° Å¬¸¯ È¿°ú Ãß°¡ ÇÔ¼ö
+    // ë²„íŠ¼ í´ë¦­ íš¨ê³¼ ì¶”ê°€ í•¨ìˆ˜
     private void AddButtonClickFeedback(Button button)
     {
         if (!Application.isMobilePlatform && !Application.isEditor)
@@ -214,7 +232,7 @@ public class OptionManager : MonoBehaviour
             trigger.triggers = new List<EventTrigger.Entry>(2);
         }
 
-        // Æ÷ÀÎÅÍ ´Ù¿î, ¾÷ ÀÌº¥Æ® Ãß°¡
+        // í¬ì¸í„° ë‹¤ìš´, ì—… ì´ë²¤íŠ¸ ì¶”ê°€
         if (trigger.triggers.Count == 0)
         {
             EventTrigger.Entry pointerDown = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
@@ -228,13 +246,13 @@ public class OptionManager : MonoBehaviour
         }
     }
 
-    // ¹öÆ° ´­¸² È¿°ú ÇÔ¼ö
+    // ë²„íŠ¼ ëˆŒë¦¼ íš¨ê³¼ í•¨ìˆ˜
     private void OnButtonDown(Transform buttonTransform)
     {
         buttonTransform.localScale = buttonPressScale;
     }
 
-    // ¹öÆ° ¶À È¿°ú ÇÔ¼ö
+    // ë²„íŠ¼ ë—Œ íš¨ê³¼ í•¨ìˆ˜
     private void OnButtonUp(Transform buttonTransform)
     {
         buttonTransform.localScale = Vector3.one;
@@ -245,9 +263,15 @@ public class OptionManager : MonoBehaviour
 
     #region Input Handling
 
-    // ESC(µÚ·Î°¡±â) ÀÔ·Â Ã³¸® ÇÔ¼ö
+    // ESC(ë’¤ë¡œê°€ê¸°) ì…ë ¥ ì²˜ë¦¬ í•¨ìˆ˜
     private void HandleEscInput()
     {
+        // ê°•ì œ ì—…ë°ì´íŠ¸ ì°¨ë‹¨ ì°½ì´ ë–  ìˆìœ¼ë©´ Pause íŒ¨ë„ì´ ë’¤ë¡œê°€ê¸°ë¡œ ëœ¨ì§€ ì•Šê²Œ ë§‰ëŠ”ë‹¤
+        if (VersionGate.IsBlocking)
+        {
+            return;
+        }
+
         if (!Input.GetKeyDown(KeyCode.Escape) && !(Application.platform == RuntimePlatform.Android && Input.GetKey(KeyCode.Escape)))
         {
             return;
@@ -270,7 +294,7 @@ public class OptionManager : MonoBehaviour
         }
     }
 
-    // ESC(µÚ·Î°¡±â) ÆĞ³Î È°¼ºÈ­ ¿©ºÎ È®ÀÎ ÇÔ¼ö
+    // ESC(ë’¤ë¡œê°€ê¸°) íŒ¨ë„ í™œì„±í™” ì—¬ë¶€ í™•ì¸ í•¨ìˆ˜
     public bool IsActiveEscPanel()
     {
         return escPanel.activeSelf;
@@ -281,19 +305,34 @@ public class OptionManager : MonoBehaviour
 
     #region Scene Management
 
-    // °ÔÀÓ ½ÃÀÛ ÇÔ¼ö
+    // ê²Œì„ ì‹œì‘ í•¨ìˆ˜
     public void StartGame()
     {
-        SceneManager.LoadScene("GameScene");
+        // ëŒ€ê¸° ì¤‘ì¸ ì „ë©´ê´‘ê³ ê°€ ìˆìœ¼ë©´ ì”¬ ì „í™˜ ì „ì— í‘œì‹œ(3íŒë§ˆë‹¤ 1íšŒ), ì—†ìœ¼ë©´ ë°”ë¡œ ì „í™˜
+        if (AdManager.Instance != null)
+        {
+            AdManager.Instance.MaybeShowInterstitial(() => SceneManager.LoadScene("GameScene"));
+        }
+        else
+        {
+            SceneManager.LoadScene("GameScene");
+        }
     }
 
-    // Å¸ÀÌÆ²·Î ÀÌµ¿ ÇÔ¼ö
+    // íƒ€ì´í‹€ë¡œ ì´ë™ í•¨ìˆ˜
     public void GoTitle()
     {
-        SceneManager.LoadScene("TitleScene");
+        if (AdManager.Instance != null)
+        {
+            AdManager.Instance.MaybeShowInterstitial(() => SceneManager.LoadScene("TitleScene"));
+        }
+        else
+        {
+            SceneManager.LoadScene("TitleScene");
+        }
     }
 
-    // °ÔÀÓ Á¾·á ÇÔ¼ö
+    // ê²Œì„ ì¢…ë£Œ í•¨ìˆ˜
     public void QuitGame()
     {
 #if UNITY_EDITOR
@@ -308,7 +347,7 @@ public class OptionManager : MonoBehaviour
 
     #region Sound Management
 
-    // BGM Åä±Û ÇÔ¼ö
+    // BGM í† ê¸€ í•¨ìˆ˜
     private void ToggleBgm()
     {
         if (SoundManager.Instance != null)
@@ -319,7 +358,7 @@ public class OptionManager : MonoBehaviour
         }
     }
 
-    // SFX Åä±Û ÇÔ¼ö
+    // SFX í† ê¸€ í•¨ìˆ˜
     private void ToggleSfx()
     {
         if (SoundManager.Instance != null)
