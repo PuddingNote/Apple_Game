@@ -14,9 +14,6 @@
   - Unity, C#
 ## 4. 기타 관련
   - [유튜브 영상](https://www.youtube.com/watch?v=FazhQT4WzEw)
-## 5. 구글 플레이스토어 링크 (2025.07.04 사업자 폐업으로 인해 게시 중단)
-  - ~~https://play.google.com/store/apps/details?id=com.Bouncy_Pudding.AppleGame~~
-<img src="https://github.com/user-attachments/assets/da9b26a5-0440-49b7-902c-21d06dded400" width="700"></img>
 
 </br>
 </br>
@@ -237,6 +234,11 @@
 
 [2025-04-04]
 - 전체적인 코드 리팩토링
+</br>
+
+[2026-08-11]
+- 유니티 버전 변경
+- Google Admob 전면 광고 추가
 </br>
 
 </details>
