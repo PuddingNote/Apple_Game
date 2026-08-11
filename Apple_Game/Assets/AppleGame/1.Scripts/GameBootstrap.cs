@@ -9,6 +9,8 @@ public static class GameBootstrap
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initialize()
     {
+        LetterboxBackground.Create();
+
         GameObject bootstrapObject = new GameObject("GameBootstrap");
         Object.DontDestroyOnLoad(bootstrapObject);
 
