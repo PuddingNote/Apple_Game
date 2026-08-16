@@ -13,8 +13,9 @@ public class VersionGate : MonoBehaviour
 {
 
     // 배포 후 바꿀 일이 있다면 이 URL만 수정하면 된다.
-    // repo가 public이어야 raw.githubusercontent.com으로 바로 접근 가능하다.
-    private const string VERSION_URL = "https://raw.githubusercontent.com/PuddingNote/Apple_Game/master/docs/version.json";
+    // 여러 게임이 공유하는 PuddingNote.github.io 저장소(applegame 폴더)로 옮겨왔다.
+    // 이 저장소가 public이어야 raw.githubusercontent.com으로 바로 접근 가능하다.
+    private const string VERSION_URL = "https://raw.githubusercontent.com/PuddingNote/PuddingNote.github.io/main/applegame/version.json";
     private const int TIMEOUT_SECONDS = 5;
 
     public static bool IsBlocking { get; private set; }
